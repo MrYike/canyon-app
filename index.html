@@ -27,17 +27,14 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(--text);display:flex;justify-content:center}
 .app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
-
 /* Screens */
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .screen.active{display:flex}
-
 /* Loading */
 .loading-wrap{flex:1;display:flex;align-items:center;justify-content:center}
 .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinning{animation:spin 1s linear infinite}
-
 /* Login */
 .login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:20px;overflow-y:auto}
 .login-icon{width:72px;height:72px;border-radius:18px;overflow:hidden;background:var(--accent-bg);display:flex;align-items:center;justify-content:center}
@@ -48,7 +45,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .google-btn:hover{background:var(--surface2)}
 .google-btn svg{width:20px;height:20px;flex-shrink:0}
 .login-note{font-size:11px;color:var(--text3);text-align:center}
-
 /* Onboarding */
 .onboard-wrap{flex:1;display:flex;flex-direction:column;overflow-y:auto;padding:20px}
 .onboard-step{display:none;flex-direction:column;gap:16px}
@@ -71,7 +67,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .btn-secondary{width:100%;padding:14px;border-radius:12px;background:var(--surface);color:var(--text);font-size:15px;font-weight:500;border:1px solid var(--border);cursor:pointer;font-family:var(--font)}
 .owner-field{display:flex;flex-direction:column;gap:6px}
 .owner-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
-
 /* Top bar */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:52px 16px 12px;background:var(--bg);flex-shrink:0}
 .topbar-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px}
@@ -80,7 +75,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .icon-btn svg{width:17px;height:17px;color:var(--text2)}
 .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
 .avatar-ph{width:32px;height:32px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--accent)}
-
 /* Filters */
 .filters{display:flex;gap:8px;padding:0 16px 10px;flex-shrink:0}
 .filter-wrap{position:relative;flex:1}
@@ -94,10 +88,8 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .filter-opt.sel{color:var(--accent)}
 .filter-opt.sel::after{content:'✓';color:var(--accent);font-weight:700}
 .filter-opt:hover{background:var(--surface2)}
-
 .hdiv{height:1px;background:var(--border);flex-shrink:0}
 .summary-bar{padding:8px 16px;font-size:12px;color:var(--text3);flex-shrink:0}
-
 /* Booking list */
 .bookings-scroll{flex:1;overflow-y:auto;padding:8px 16px 16px;min-height:0}
 .booking-card{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:8px;border:1px solid var(--border)}
@@ -111,7 +103,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .empty-icon svg{width:26px;height:26px;color:var(--text3)}
 .empty-title{font-size:16px;font-weight:700;color:var(--text)}
 .empty-sub{font-size:13px;color:var(--text3);text-align:center}
-
 /* Calendar */
 .cal-pad{padding:10px 16px;flex-shrink:0}
 .cal-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:14px}
@@ -132,7 +123,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .cal-date-label{font-size:15px;font-weight:700;color:var(--text)}
 .cal-count{font-size:12px;color:var(--text3)}
 .cal-list{flex:1;overflow-y:auto;padding:0 16px 16px;min-height:0}
-
 /* Messages */
 .msg-list{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;min-height:0}
 .msg-bubble{max-width:78%;padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.4}
@@ -144,7 +134,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .msg-input{flex:1;padding:9px 13px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;font-family:var(--font);outline:none}
 .msg-send{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .msg-send svg{width:15px;height:15px;color:white}
-
 /* Settings */
 .settings-scroll{flex:1;overflow-y:auto;padding:0 16px 24px;min-height:0}
 .sec-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin:16px 0 6px}
@@ -164,7 +153,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .prof-email{font-size:11px;color:var(--text3);margin-top:1px}
 .signout-btn{width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:4px}
 .ver{text-align:center;font-size:12px;color:var(--text3);padding:16px}
-
 /* Bottom nav */
 .bottom-nav{display:flex;background:var(--nav);border-top:1px solid var(--border);padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:none;background:none;cursor:pointer;font-size:10px;font-weight:500;color:var(--text3);font-family:var(--font)}
@@ -174,12 +162,10 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 </head>
 <body>
 <div class="app" id="app">
-
   <!-- LOADING -->
   <div class="screen active" id="loadingScreen">
     <div class="loading-wrap"><div class="spinner"></div></div>
   </div>
-
   <!-- LOGIN -->
   <div class="screen" id="loginScreen">
     <div class="login-wrap">
@@ -193,7 +179,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="login-note">Only authorised staff can access this app</div>
     </div>
   </div>
-
   <!-- ONBOARDING -->
   <div class="screen" id="onboardScreen">
     <div class="topbar" style="padding-top:52px">
@@ -202,7 +187,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
     </div>
     <div class="hdiv"></div>
     <div class="onboard-wrap">
-
       <!-- Step 1: Role -->
       <div class="onboard-step active" id="step1">
         <div class="onboard-title">What's your role?</div>
@@ -217,7 +201,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         </div>
         <button class="btn-primary" onclick="nextStep()" id="step1Next" disabled style="opacity:.4">Continue</button>
       </div>
-
       <!-- Step 2 Guide: Who do you work for -->
       <div class="onboard-step" id="step2Guide">
         <div class="onboard-title">Who do you work for?</div>
@@ -227,7 +210,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         <div id="orgSuggestions"></div>
         <button class="btn-primary" onclick="nextStep()">Continue</button>
       </div>
-
       <!-- Step 2 Owner: Business details -->
       <div class="onboard-step" id="step2Owner">
         <div class="onboard-title">Tell us about your business</div>
@@ -250,7 +232,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         </div>
         <button class="btn-primary" onclick="submitOwner()">Submit for Review</button>
       </div>
-
       <!-- Step 3: Done -->
       <div class="onboard-step" id="step3">
         <div style="text-align:center;padding:20px 0">
@@ -260,13 +241,10 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         </div>
         <button class="btn-primary" onclick="finishOnboarding()">Go to App</button>
       </div>
-
     </div>
   </div>
-
   <!-- MAIN APP -->
   <div class="screen" id="appScreen">
-
     <!-- HOME TAB -->
     <div class="screen active" id="homeTab">
       <div class="topbar">
@@ -285,16 +263,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
             <span id="canyonLabel" style="flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Empress</span>
             <svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </button>
-          <div class="filter-dd" id="canyonDd">
-            <div class="filter-opt sel" onclick="selCanyon('Empress',this)">Empress</div>
-            <div class="filter-opt" onclick="selCanyon('Butterbox',this)">Butterbox</div>
-            <div class="filter-opt" onclick="selCanyon('Claustral',this)">Claustral</div>
-            <div class="filter-opt" onclick="selCanyon('Grand Canyon',this)">Grand Canyon</div>
-            <div class="filter-opt" onclick="selCanyon('Deep Pass',this)">Deep Pass</div>
-            <div class="filter-opt" onclick="selCanyon('Danae Brook',this)">Danae Brook</div>
-            <div class="filter-opt" onclick="selCanyon('Fortress',this)">Fortress</div>
-            <div class="filter-opt" onclick="selCanyon('Juggler',this)">Juggler</div>
-          </div>
+          <div class="filter-dd" id="canyonDd"></div>
         </div>
         <div class="filter-wrap">
           <button class="filter-btn" onclick="toggleDd('dateDd')">
@@ -310,7 +279,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="hdiv"></div>
       <div class="bookings-scroll" id="homeList"></div>
     </div>
-
     <!-- CALENDAR TAB -->
     <div class="screen" id="calTab">
       <div class="topbar">
@@ -337,7 +305,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="hdiv"></div>
       <div class="cal-list" id="calList"></div>
     </div>
-
     <!-- MESSAGES TAB -->
     <div class="screen" id="msgTab">
       <div class="topbar">
@@ -352,7 +319,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         </button>
       </div>
     </div>
-
     <!-- SETTINGS TAB -->
     <div class="screen" id="settingsTab">
       <div class="topbar"><div class="topbar-title">Settings</div></div>
@@ -369,7 +335,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
           </div>
         </div>
         <button class="signout-btn" onclick="signOut()">Sign Out</button>
-
         <div class="sec-label">Appearance</div>
         <div class="settings-card">
           <div class="sub-label">THEME</div>
@@ -385,7 +350,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
             <button class="seg-btn" onclick="setFs('17px',this)">Large</button>
           </div>
         </div>
-
         <div class="sec-label">About</div>
         <div class="settings-card">
           <div class="set-row">
@@ -400,7 +364,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         <div class="ver">Version 1.0.0</div>
       </div>
     </div>
-
     <!-- BOTTOM NAV -->
     <div class="bottom-nav" id="bottomNav">
       <button class="nav-btn active" onclick="showTab('home',this)">
@@ -421,18 +384,14 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       </button>
     </div>
   </div>
-
 </div>
 <script>
 const {createClient}=supabase;
 const sb=createClient('https://akgftmrraboplxpeugvi.supabase.co','sb_publishable_aobHSo8qxS8sM85c5qO1Tw_R2-8NyO7');
 const DATA_URL='https://mryike.github.io/canyon-tracker/data.json';
-
 let user=null,profile=null,allData={},canyon='Empress',dateStr='',dateList=[],calY=new Date().getFullYear(),calM=new Date().getMonth(),calSel='',selectedRole='',selectedOrgs=[],msgChannel=null;
-
 const todayStr=()=>new Date().toISOString().slice(0,10);
 const parseTime=iso=>new Date(iso).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true});
-
 function fmtFull(s){
   const d=new Date(s+'T12:00:00'),t=todayStr();
   const tom=new Date();tom.setDate(tom.getDate()+1);
@@ -440,7 +399,26 @@ function fmtFull(s){
   if(s===tom.toISOString().slice(0,10))return'Tomorrow';
   return d.toLocaleDateString('en-AU',{weekday:'long',month:'long',day:'numeric'});
 }
-
+// ── Canyon & Date helpers (NEW – dynamic from Canyon.py data.json) ─────
+function getDateListForCanyon(c) {
+  return Object.keys(allData[c] || {}).sort();
+}
+function populateCanyons() {
+  const dd = document.getElementById('canyonDd');
+  let canyons = Object.keys(allData);
+  // Prefer the exact 3 canyons from Canyon.py first, then alphabetical
+  const preferredOrder = ['Empress', 'Grand Canyon', 'Narrow Neck'];
+  canyons.sort((a, b) => {
+    const ia = preferredOrder.indexOf(a);
+    const ib = preferredOrder.indexOf(b);
+    if (ia === -1) return ib === -1 ? a.localeCompare(b) : 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+  dd.innerHTML = canyons.map(c => 
+    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c}',this)">${c}</div>`
+  ).join('');
+}
 // ── Screens ────────────────────────────────────────────────────────────
 function showScreen(id){
   document.querySelectorAll('.app>.screen').forEach(s=>s.classList.remove('active'));
@@ -454,7 +432,6 @@ function showTab(name,btn){
   if(name==='cal')renderCal();
   if(name==='msg')scrollMsgs();
 }
-
 // ── Auth ───────────────────────────────────────────────────────────────
 async function signInGoogle(){
   await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
@@ -465,10 +442,8 @@ async function signOut(){
   user=null;profile=null;
   showScreen('loginScreen');
 }
-
 // ── Onboarding ─────────────────────────────────────────────────────────
 let currentStep=1,totalSteps=3;
-
 function selectRole(r){
   selectedRole=r;
   document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
@@ -476,7 +451,6 @@ function selectRole(r){
   document.getElementById('step1Next').disabled=false;
   document.getElementById('step1Next').style.opacity='1';
 }
-
 function nextStep(){
   if(currentStep===1){
     document.getElementById('step1').classList.remove('active');
@@ -497,7 +471,6 @@ function nextStep(){
     saveGuideProfile();
   }
 }
-
 async function saveGuideProfile(){
   if(!user)return;
   await sb.from('profiles').upsert({id:user.id,full_name:user.user_metadata?.full_name||user.email,avatar_url:user.user_metadata?.avatar_url,role:'guide',onboarding_complete:true});
@@ -510,7 +483,6 @@ async function saveGuideProfile(){
     if(data)await sb.from('profile_organisations').upsert({profile_id:user.id,organisation_id:data.id});
   }
 }
-
 async function submitOwner(){
   if(!user)return;
   const name=document.getElementById('bizName').value.trim();
@@ -521,14 +493,12 @@ async function submitOwner(){
   document.getElementById('step3').innerHTML=`<div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:16px">📬</div><div class="onboard-title" style="text-align:center">Request Submitted!</div><div class="onboard-sub" style="text-align:center;margin-top:8px">We'll review your application and get back to you shortly.</div></div><button class="btn-primary" onclick="finishOnboarding()">Continue</button>`;
   document.getElementById('step3').classList.add('active');
 }
-
 function finishOnboarding(){
   showScreen('appScreen');
   loadData();
   setupMsgs();
   updateProfileUI();
 }
-
 // Org search
 async function searchOrgs(){
   const q=document.getElementById('orgSearch').value.trim();
@@ -538,12 +508,10 @@ async function searchOrgs(){
   const results=data||[];
   sug.innerHTML=results.map(o=>`<div class="org-suggestion" onclick="addOrg('${o.name}')">${o.name}</div>`).join('');
 }
-
 function addOrgFromInput(){
   const v=document.getElementById('orgSearch').value.trim();
   if(v)addOrg(v);
 }
-
 function addOrg(name){
   if(selectedOrgs.includes(name))return;
   selectedOrgs.push(name);
@@ -551,16 +519,13 @@ function addOrg(name){
   document.getElementById('orgSuggestions').innerHTML='';
   renderOrgTags();
 }
-
 function removeOrg(name){
   selectedOrgs=selectedOrgs.filter(o=>o!==name);
   renderOrgTags();
 }
-
 function renderOrgTags(){
   document.getElementById('selectedOrgs').innerHTML=selectedOrgs.map(o=>`<div class="org-tag">${o}<button onclick="removeOrg('${o}')">×</button></div>`).join('');
 }
-
 // ── Profile UI ─────────────────────────────────────────────────────────
 function updateProfileUI(){
   if(!user)return;
@@ -576,15 +541,13 @@ function updateProfileUI(){
   if(avatar){uav.innerHTML=`<img class="avatar" src="${avatar}">`;}
   else{uav.innerHTML=`<div class="avatar-ph">${name.slice(0,2).toUpperCase()}</div>`;}
 }
-
 // ── Theme & Font ───────────────────────────────────────────────────────
 function setTheme(t,btn){
   const app=document.getElementById('app');
   if(t==='dark')app.classList.add('dark');
   else if(t==='light')app.classList.remove('dark');
   else{window.matchMedia('(prefers-color-scheme:dark)').matches?app.classList.add('dark'):app.classList.remove('dark');}
-  document.querySelectorAll('#settingsTab .seg-btn').slice&&null;
-  ['thL','thD','thS'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
+  document.querySelectorAll('#settingsTab .seg-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   localStorage.setItem('theme',t);
 }
@@ -594,12 +557,10 @@ function setFs(size,btn){
   btn.classList.add('active');
   localStorage.setItem('fs',size);
 }
-
 // ── Dropdowns ──────────────────────────────────────────────────────────
 document.addEventListener('click',e=>{if(!e.target.closest('.filter-wrap'))closeAllDd()});
 function closeAllDd(){document.querySelectorAll('.filter-dd').forEach(d=>d.classList.remove('open'))}
 function toggleDd(id){const dd=document.getElementById(id);const was=dd.classList.contains('open');closeAllDd();if(!was)dd.classList.add('open')}
-
 function selCanyon(name,el){
   canyon=name;
   document.getElementById('canyonLabel').textContent=name;
@@ -607,9 +568,18 @@ function selCanyon(name,el){
   el.closest('.filter-dd').querySelectorAll('.filter-opt').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel');
   closeAllDd();
-  renderHome();renderCal();
-}
 
+  // Rebuild date dropdown for the selected canyon (now dynamic per canyon)
+  dateList = getDateListForCanyon(canyon);
+  if(!dateList.includes(dateStr)){
+    const today = todayStr();
+    dateStr = dateList.find(d => d >= today) || dateList[0] || today;
+  }
+  document.getElementById('dateLabel').textContent=fmtFull(dateStr);
+  buildDateDd();
+  renderHome();
+  renderCal();
+}
 function buildDateDd(){
   const dd=document.getElementById('dateDd');
   dd.innerHTML=dateList.map(d=>`<div class="filter-opt${d===dateStr?' sel':''}" onclick="selDate('${d}',this)">${fmtFull(d)}</div>`).join('');
@@ -619,7 +589,6 @@ function selDate(d,el){
   document.getElementById('dateLabel').textContent=fmtFull(d);
   closeAllDd();renderHome();buildDateDd();
 }
-
 // ── Home ───────────────────────────────────────────────────────────────
 function renderHome(){
   const day=((allData[canyon]||{})[dateStr])||{};
@@ -629,7 +598,6 @@ function renderHome(){
   if(!sold.length){list.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="empty-title">No bookings</div><div class="empty-sub">Nothing scheduled for this day</div></div>`;return;}
   list.innerHTML=sold.map(s=>`<div class="booking-card"><div class="booking-badges"><span class="badge badge-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${s.time?parseTime(s.time):''}</span></div><div class="booking-co">${s.company||'Unknown'}</div></div>`).join('');
 }
-
 // ── Calendar ───────────────────────────────────────────────────────────
 function renderCal(){
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -658,7 +626,6 @@ function renderCalDay(){
   if(!sold.length){list.innerHTML=`<div class="empty-state"><div class="empty-title">No bookings</div><div class="empty-sub">Nothing scheduled</div></div>`;return;}
   list.innerHTML=sold.map(s=>`<div class="booking-card"><div class="booking-badges"><span class="badge badge-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${s.time?parseTime(s.time):''}</span></div><div class="booking-co">${s.company||'Unknown'}</div></div>`).join('');
 }
-
 // ── Messages ───────────────────────────────────────────────────────────
 async function setupMsgs(){
   const {data}=await sb.from('messages').select('*').order('created_at',{ascending:true}).limit(100);
@@ -690,7 +657,6 @@ async function sendMsg(){
   await sb.from('messages').insert({user_id:user.id,username:name,message:text});
 }
 function scrollMsgs(){const l=document.getElementById('msgList');l.scrollTop=l.scrollHeight}
-
 // ── Data ───────────────────────────────────────────────────────────────
 async function loadData(manual){
   const btn=document.getElementById('refreshBtn');
@@ -699,16 +665,30 @@ async function loadData(manual){
     const res=await fetch(DATA_URL+'?t='+Date.now());
     const json=await res.json();
     allData=json.data||{};
-    const emp=allData['Empress']||{};
-    dateList=Object.keys(emp).sort();
-    if(!dateStr||!dateList.includes(dateStr))dateStr=dateList.find(d=>d>=todayStr())||dateList[0]||todayStr();
+
+    // Populate canyon dropdown from whatever Canyon.py put in data.json (only the 3 canyons)
+    populateCanyons();
+
+    // Auto-select first canyon if current one is missing
+    const availableCanyons = Object.keys(allData);
+    if(availableCanyons.length > 0 && (!canyon || !allData[canyon])){
+      canyon = availableCanyons[0]; // will be Empress / Grand Canyon / Narrow Neck in preferred order
+    }
+    document.getElementById('canyonLabel').textContent = canyon;
+    document.getElementById('calSub').textContent = canyon;
+
+    // Dates are now specific to the selected canyon
+    dateList = getDateListForCanyon(canyon);
+    if(!dateStr || !dateList.includes(dateStr)){
+      dateStr = dateList.find(d=>d>=todayStr()) || dateList[0] || todayStr();
+    }
     document.getElementById('dateLabel').textContent=fmtFull(dateStr);
-    buildDateDd();renderHome();
-    if(calSel)renderCal();
+    buildDateDd();
+    renderHome();
+    if(calSel) renderCal();
   }catch(e){if(manual)alert('Could not refresh. Check connection.')}
   if(btn)btn.querySelector('svg').classList.remove('spinning');
 }
-
 // ── Init ───────────────────────────────────────────────────────────────
 async function init(){
   // Restore preferences
@@ -720,7 +700,6 @@ async function init(){
     else if(savedTheme==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches)app.classList.add('dark');
   }
   if(savedFs)document.documentElement.style.setProperty('--fs',savedFs);
-
   const {data:{session}}=await sb.auth.getSession();
   if(session){
     user=session.user;
@@ -739,7 +718,6 @@ async function init(){
   } else {
     showScreen('loginScreen');
   }
-
   sb.auth.onAuthStateChange(async(event,session)=>{
     if(event==='SIGNED_IN'&&session){
       user=session.user;
@@ -760,7 +738,6 @@ async function init(){
     }
   });
 }
-
 dateStr=todayStr();calSel=todayStr();
 init();
 setInterval(loadData,3600000);
