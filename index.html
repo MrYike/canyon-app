@@ -27,7 +27,6 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(--text);display:flex;justify-content:center}
 .app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
-/* Screens */
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .screen.active{display:flex}
 /* Loading */
@@ -75,6 +74,10 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .icon-btn svg{width:17px;height:17px;color:var(--text2)}
 .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
 .avatar-ph{width:32px;height:32px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--accent)}
+/* Updated banner */
+.updated-bar{padding:6px 16px;font-size:11px;color:var(--text3);flex-shrink:0;display:flex;align-items:center;gap:6px}
+.updated-dot{width:6px;height:6px;border-radius:50%;background:#4caf50;flex-shrink:0}
+.updated-dot.stale{background:#ff9800}
 /* Filters */
 .filters{display:flex;gap:8px;padding:0 16px 10px;flex-shrink:0}
 .filter-wrap{position:relative;flex:1}
@@ -162,10 +165,12 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 </head>
 <body>
 <div class="app" id="app">
+
   <!-- LOADING -->
   <div class="screen active" id="loadingScreen">
     <div class="loading-wrap"><div class="spinner"></div></div>
   </div>
+
   <!-- LOGIN -->
   <div class="screen" id="loginScreen">
     <div class="login-wrap">
@@ -179,6 +184,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="login-note">Only authorised staff can access this app</div>
     </div>
   </div>
+
   <!-- ONBOARDING -->
   <div class="screen" id="onboardScreen">
     <div class="topbar" style="padding-top:52px">
@@ -187,7 +193,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
     </div>
     <div class="hdiv"></div>
     <div class="onboard-wrap">
-      <!-- Step 1: Role -->
       <div class="onboard-step active" id="step1">
         <div class="onboard-title">What's your role?</div>
         <div class="onboard-sub">This helps us set up the right experience for you.</div>
@@ -201,7 +206,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         </div>
         <button class="btn-primary" onclick="nextStep()" id="step1Next" disabled style="opacity:.4">Continue</button>
       </div>
-      <!-- Step 2 Guide: Who do you work for -->
       <div class="onboard-step" id="step2Guide">
         <div class="onboard-title">Who do you work for?</div>
         <div class="onboard-sub">You can add multiple organisations.</div>
@@ -210,7 +214,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         <div id="orgSuggestions"></div>
         <button class="btn-primary" onclick="nextStep()">Continue</button>
       </div>
-      <!-- Step 2 Owner: Business details -->
       <div class="onboard-step" id="step2Owner">
         <div class="onboard-title">Tell us about your business</div>
         <div class="onboard-sub">This helps set up your organisation on the platform.</div>
@@ -232,7 +235,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         </div>
         <button class="btn-primary" onclick="submitOwner()">Submit for Review</button>
       </div>
-      <!-- Step 3: Done -->
       <div class="onboard-step" id="step3">
         <div style="text-align:center;padding:20px 0">
           <div style="font-size:48px;margin-bottom:16px">🎉</div>
@@ -243,8 +245,10 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       </div>
     </div>
   </div>
+
   <!-- MAIN APP -->
   <div class="screen" id="appScreen">
+
     <!-- HOME TAB -->
     <div class="screen active" id="homeTab">
       <div class="topbar">
@@ -255,6 +259,11 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
           </button>
           <div id="userAvatarEl"></div>
         </div>
+      </div>
+      <!-- Last updated banner -->
+      <div class="updated-bar" id="updatedBar" style="display:none">
+        <div class="updated-dot" id="updatedDot"></div>
+        <span id="updatedText"></span>
       </div>
       <div class="filters">
         <div class="filter-wrap">
@@ -279,6 +288,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="hdiv"></div>
       <div class="bookings-scroll" id="homeList"></div>
     </div>
+
     <!-- CALENDAR TAB -->
     <div class="screen" id="calTab">
       <div class="topbar">
@@ -305,6 +315,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="hdiv"></div>
       <div class="cal-list" id="calList"></div>
     </div>
+
     <!-- MESSAGES TAB -->
     <div class="screen" id="msgTab">
       <div class="topbar">
@@ -319,6 +330,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         </button>
       </div>
     </div>
+
     <!-- SETTINGS TAB -->
     <div class="screen" id="settingsTab">
       <div class="topbar"><div class="topbar-title">Settings</div></div>
@@ -350,20 +362,37 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
             <button class="seg-btn" onclick="setFs('17px',this)">Large</button>
           </div>
         </div>
-        <div class="sec-label">About</div>
+        <div class="sec-label">Data</div>
         <div class="settings-card">
+          <div class="set-row" style="border-top:none">
+            <div class="set-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="set-info">
+              <div class="set-label">Last updated</div>
+              <div class="set-desc" id="settingsUpdated">—</div>
+            </div>
+          </div>
           <div class="set-row">
             <div class="set-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-            <div class="set-info"><div class="set-label">Canyon Bookings</div><div class="set-desc">Read-only booking viewer</div></div>
+            <div class="set-info">
+              <div class="set-label">Canyons tracked</div>
+              <div class="set-desc" id="settingsCanyons">—</div>
+            </div>
           </div>
           <div class="set-row">
             <div class="set-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
             <div class="set-info"><div class="set-label">Data source</div><div class="set-desc">mryike.github.io/canyon-tracker</div></div>
           </div>
         </div>
-        <div class="ver">Version 1.0.0</div>
+        <div class="sec-label">About</div>
+        <div class="settings-card">
+          <div class="set-row" style="border-top:none">
+            <div class="set-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="set-info"><div class="set-label">Canyon Bookings</div><div class="set-desc">Version 1.1.0</div></div>
+          </div>
+        </div>
       </div>
     </div>
+
     <!-- BOTTOM NAV -->
     <div class="bottom-nav" id="bottomNav">
       <button class="nav-btn active" onclick="showTab('home',this)">
@@ -385,362 +414,507 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
     </div>
   </div>
 </div>
+
 <script>
-const {createClient}=supabase;
-const sb=createClient('https://akgftmrraboplxpeugvi.supabase.co','sb_publishable_aobHSo8qxS8sM85c5qO1Tw_R2-8NyO7');
-const DATA_URL='https://mryike.github.io/canyon-tracker/data.json';
-let user=null,profile=null,allData={},canyon='Empress',dateStr='',dateList=[],calY=new Date().getFullYear(),calM=new Date().getMonth(),calSel='',selectedRole='',selectedOrgs=[],msgChannel=null;
-const todayStr=()=>new Date().toISOString().slice(0,10);
-const parseTime=iso=>new Date(iso).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true});
-function fmtFull(s){
-  const d=new Date(s+'T12:00:00'),t=todayStr();
-  const tom=new Date();tom.setDate(tom.getDate()+1);
-  if(s===t)return'Today';
-  if(s===tom.toISOString().slice(0,10))return'Tomorrow';
-  return d.toLocaleDateString('en-AU',{weekday:'long',month:'long',day:'numeric'});
+const {createClient} = supabase;
+const sb = createClient(
+  'https://akgftmrraboplxpeugvi.supabase.co',
+  'sb_publishable_aobHSo8qxS8sM85c5qO1Tw_R2-8NyO7'
+);
+const DATA_URL = 'https://mryike.github.io/canyon-tracker/data.json';
+
+// Canyon.py saves exactly these 3 names — order matches preferred display order
+const CANYON_ORDER = ['Empress', 'Grand Canyon', 'Narrow Neck'];
+
+let user = null, profile = null;
+let allData = {};         // { "Empress": { "2026-04-16": { sold: [...] } } }
+let dataUpdated = '';     // "2026-04-16 06:00" from Canyon.py
+let canyon = 'Empress';
+let dateStr = '';
+let dateList = [];
+let calY = new Date().getFullYear(), calM = new Date().getMonth(), calSel = '';
+let selectedRole = '', selectedOrgs = [], msgChannel = null;
+
+// ── Helpers ────────────────────────────────────────────────────────────
+const todayStr = () => new Date().toISOString().slice(0, 10);
+
+const parseTime = iso => {
+  try { return new Date(iso).toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true}); }
+  catch { return iso; }
+};
+
+function fmtFull(s) {
+  const d = new Date(s + 'T12:00:00'), t = todayStr();
+  const tom = new Date(); tom.setDate(tom.getDate() + 1);
+  if (s === t) return 'Today';
+  if (s === tom.toISOString().slice(0, 10)) return 'Tomorrow';
+  return d.toLocaleDateString('en-AU', {weekday:'long', month:'long', day:'numeric'});
 }
-// ── Canyon & Date helpers (NEW – dynamic from Canyon.py data.json) ─────
+
 function getDateListForCanyon(c) {
   return Object.keys(allData[c] || {}).sort();
 }
+
+// ── Canyon dropdown ────────────────────────────────────────────────────
 function populateCanyons() {
   const dd = document.getElementById('canyonDd');
-  let canyons = Object.keys(allData);
-  // Prefer the exact 3 canyons from Canyon.py first, then alphabetical
-  const preferredOrder = ['Empress', 'Grand Canyon', 'Narrow Neck'];
-  canyons.sort((a, b) => {
-    const ia = preferredOrder.indexOf(a);
-    const ib = preferredOrder.indexOf(b);
-    if (ia === -1) return ib === -1 ? a.localeCompare(b) : 1;
+  // Use Canyon.py's actual keys, sorted by preferred order
+  const canyons = Object.keys(allData).sort((a, b) => {
+    const ia = CANYON_ORDER.indexOf(a), ib = CANYON_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
     if (ib === -1) return -1;
     return ia - ib;
   });
-  dd.innerHTML = canyons.map(c => 
-    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c}',this)">${c}</div>`
+  dd.innerHTML = canyons.map(c =>
+    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
   ).join('');
+
+  // Update settings page canyon list
+  document.getElementById('settingsCanyons').textContent = canyons.join(', ');
 }
+
+// ── Updated banner ─────────────────────────────────────────────────────
+function showUpdatedBar(updatedStr) {
+  if (!updatedStr) return;
+  dataUpdated = updatedStr;
+  // Parse "2026-04-16 06:00" into a Date
+  const parts = updatedStr.match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/);
+  let label = updatedStr;
+  let stale = false;
+  if (parts) {
+    const dt = new Date(parts[1] + 'T' + parts[2] + ':00');
+    const diffMins = (Date.now() - dt.getTime()) / 60000;
+    if (diffMins < 90) {
+      label = `Updated ${Math.round(diffMins)}m ago`;
+    } else {
+      label = `Updated ${dt.toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true})} ${dt.toLocaleDateString('en-AU', {day:'numeric', month:'short'})}`;
+      stale = diffMins > 120; // orange dot if >2hrs old
+    }
+  }
+  document.getElementById('updatedText').textContent = label;
+  document.getElementById('updatedDot').className = 'updated-dot' + (stale ? ' stale' : '');
+  document.getElementById('updatedBar').style.display = 'flex';
+  document.getElementById('settingsUpdated').textContent = updatedStr;
+}
+
 // ── Screens ────────────────────────────────────────────────────────────
-function showScreen(id){
-  document.querySelectorAll('.app>.screen').forEach(s=>s.classList.remove('active'));
+function showScreen(id) {
+  document.querySelectorAll('.app>.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function showTab(name,btn){
-  document.querySelectorAll('#appScreen>.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(name+'Tab').classList.add('active');
+
+function showTab(name, btn) {
+  document.querySelectorAll('#appScreen>.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name + 'Tab').classList.add('active');
   btn.classList.add('active');
-  if(name==='cal')renderCal();
-  if(name==='msg')scrollMsgs();
+  if (name === 'cal') renderCal();
+  if (name === 'msg') scrollMsgs();
 }
+
 // ── Auth ───────────────────────────────────────────────────────────────
-async function signInGoogle(){
-  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
+async function signInGoogle() {
+  await sb.auth.signInWithOAuth({provider:'google', options:{redirectTo:window.location.origin}});
 }
-async function signOut(){
-  if(msgChannel)sb.removeChannel(msgChannel);
+
+async function signOut() {
+  if (msgChannel) sb.removeChannel(msgChannel);
   await sb.auth.signOut();
-  user=null;profile=null;
+  user = null; profile = null;
   showScreen('loginScreen');
 }
+
 // ── Onboarding ─────────────────────────────────────────────────────────
-let currentStep=1,totalSteps=3;
-function selectRole(r){
-  selectedRole=r;
-  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('role'+r.charAt(0).toUpperCase()+r.slice(1)).classList.add('selected');
-  document.getElementById('step1Next').disabled=false;
-  document.getElementById('step1Next').style.opacity='1';
+let currentStep = 1;
+
+function selectRole(r) {
+  selectedRole = r;
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('role' + r.charAt(0).toUpperCase() + r.slice(1)).classList.add('selected');
+  document.getElementById('step1Next').disabled = false;
+  document.getElementById('step1Next').style.opacity = '1';
 }
-function nextStep(){
-  if(currentStep===1){
+
+function nextStep() {
+  if (currentStep === 1) {
     document.getElementById('step1').classList.remove('active');
-    if(selectedRole==='guide'){
-      document.getElementById('step2Guide').classList.add('active');
-      document.getElementById('onboardStep').textContent='Step 2 of 3';
-      currentStep=2;
-    } else {
-      document.getElementById('step2Owner').classList.add('active');
-      document.getElementById('onboardStep').textContent='Step 2 of 3';
-      currentStep=2;
-    }
-  } else if(currentStep===2){
+    const nextId = selectedRole === 'guide' ? 'step2Guide' : 'step2Owner';
+    document.getElementById(nextId).classList.add('active');
+    document.getElementById('onboardStep').textContent = 'Step 2 of 3';
+    currentStep = 2;
+  } else if (currentStep === 2) {
     document.getElementById('step2Guide').classList.remove('active');
     document.getElementById('step3').classList.add('active');
-    document.getElementById('onboardStep').textContent='Step 3 of 3';
-    currentStep=3;
+    document.getElementById('onboardStep').textContent = 'Step 3 of 3';
+    currentStep = 3;
     saveGuideProfile();
   }
 }
-async function saveGuideProfile(){
-  if(!user)return;
-  await sb.from('profiles').upsert({id:user.id,full_name:user.user_metadata?.full_name||user.email,avatar_url:user.user_metadata?.avatar_url,role:'guide',onboarding_complete:true});
-  for(const org of selectedOrgs){
-    let {data}=await sb.from('organisations').select('id').eq('name',org).single();
-    if(!data){
-      const res=await sb.from('organisations').insert({name:org,owner_id:null}).select('id').single();
-      data=res.data;
+
+async function saveGuideProfile() {
+  if (!user) return;
+  await sb.from('profiles').upsert({id:user.id, full_name:user.user_metadata?.full_name||user.email, avatar_url:user.user_metadata?.avatar_url, role:'guide', onboarding_complete:true});
+  for (const org of selectedOrgs) {
+    let {data} = await sb.from('organisations').select('id').eq('name', org).single();
+    if (!data) {
+      const res = await sb.from('organisations').insert({name:org, owner_id:null}).select('id').single();
+      data = res.data;
     }
-    if(data)await sb.from('profile_organisations').upsert({profile_id:user.id,organisation_id:data.id});
+    if (data) await sb.from('profile_organisations').upsert({profile_id:user.id, organisation_id:data.id});
   }
 }
-async function submitOwner(){
-  if(!user)return;
-  const name=document.getElementById('bizName').value.trim();
-  if(!name){alert('Please enter your business name');return;}
-  await sb.from('profiles').upsert({id:user.id,full_name:user.user_metadata?.full_name||user.email,avatar_url:user.user_metadata?.avatar_url,role:'owner',onboarding_complete:false});
-  await sb.from('organisations').upsert({name,owner_id:user.id});
+
+async function submitOwner() {
+  if (!user) return;
+  const name = document.getElementById('bizName').value.trim();
+  if (!name) { alert('Please enter your business name'); return; }
+  await sb.from('profiles').upsert({id:user.id, full_name:user.user_metadata?.full_name||user.email, avatar_url:user.user_metadata?.avatar_url, role:'owner', onboarding_complete:false});
+  await sb.from('organisations').upsert({name, owner_id:user.id});
   document.getElementById('step2Owner').classList.remove('active');
-  document.getElementById('step3').innerHTML=`<div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:16px">📬</div><div class="onboard-title" style="text-align:center">Request Submitted!</div><div class="onboard-sub" style="text-align:center;margin-top:8px">We'll review your application and get back to you shortly.</div></div><button class="btn-primary" onclick="finishOnboarding()">Continue</button>`;
+  document.getElementById('step3').innerHTML = `<div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:16px">📬</div><div class="onboard-title" style="text-align:center">Request Submitted!</div><div class="onboard-sub" style="text-align:center;margin-top:8px">We'll review your application and get back to you shortly.</div></div><button class="btn-primary" onclick="finishOnboarding()">Continue</button>`;
   document.getElementById('step3').classList.add('active');
 }
-function finishOnboarding(){
+
+function finishOnboarding() {
   showScreen('appScreen');
   loadData();
   setupMsgs();
   updateProfileUI();
 }
-// Org search
-async function searchOrgs(){
-  const q=document.getElementById('orgSearch').value.trim();
-  const sug=document.getElementById('orgSuggestions');
-  if(!q){sug.innerHTML='';return;}
-  const {data}=await sb.from('organisations').select('name').ilike('name','%'+q+'%').limit(5);
-  const results=data||[];
-  sug.innerHTML=results.map(o=>`<div class="org-suggestion" onclick="addOrg('${o.name}')">${o.name}</div>`).join('');
+
+async function searchOrgs() {
+  const q = document.getElementById('orgSearch').value.trim();
+  const sug = document.getElementById('orgSuggestions');
+  if (!q) { sug.innerHTML = ''; return; }
+  const {data} = await sb.from('organisations').select('name').ilike('name', '%' + q + '%').limit(5);
+  sug.innerHTML = (data||[]).map(o => `<div class="org-suggestion" onclick="addOrg('${o.name}')">${o.name}</div>`).join('');
 }
-function addOrgFromInput(){
-  const v=document.getElementById('orgSearch').value.trim();
-  if(v)addOrg(v);
+
+function addOrgFromInput() {
+  const v = document.getElementById('orgSearch').value.trim();
+  if (v) addOrg(v);
 }
-function addOrg(name){
-  if(selectedOrgs.includes(name))return;
+
+function addOrg(name) {
+  if (selectedOrgs.includes(name)) return;
   selectedOrgs.push(name);
-  document.getElementById('orgSearch').value='';
-  document.getElementById('orgSuggestions').innerHTML='';
+  document.getElementById('orgSearch').value = '';
+  document.getElementById('orgSuggestions').innerHTML = '';
   renderOrgTags();
 }
-function removeOrg(name){
-  selectedOrgs=selectedOrgs.filter(o=>o!==name);
+
+function removeOrg(name) {
+  selectedOrgs = selectedOrgs.filter(o => o !== name);
   renderOrgTags();
 }
-function renderOrgTags(){
-  document.getElementById('selectedOrgs').innerHTML=selectedOrgs.map(o=>`<div class="org-tag">${o}<button onclick="removeOrg('${o}')">×</button></div>`).join('');
+
+function renderOrgTags() {
+  document.getElementById('selectedOrgs').innerHTML = selectedOrgs.map(o =>
+    `<div class="org-tag">${o}<button onclick="removeOrg('${o}')">×</button></div>`
+  ).join('');
 }
+
 // ── Profile UI ─────────────────────────────────────────────────────────
-function updateProfileUI(){
-  if(!user)return;
-  const name=user.user_metadata?.full_name||user.email||'User';
-  const email=user.email||'';
-  const avatar=user.user_metadata?.avatar_url;
-  document.getElementById('profName').textContent=name;
-  document.getElementById('profEmail').textContent=email;
-  const av=document.getElementById('profAvatar');
-  if(avatar){av.outerHTML=`<img class="avatar" style="width:40px;height:40px" src="${avatar}" id="profAvatar">`;}
-  else{av.textContent=name.slice(0,2).toUpperCase();}
-  const uav=document.getElementById('userAvatarEl');
-  if(avatar){uav.innerHTML=`<img class="avatar" src="${avatar}">`;}
-  else{uav.innerHTML=`<div class="avatar-ph">${name.slice(0,2).toUpperCase()}</div>`;}
+function updateProfileUI() {
+  if (!user) return;
+  const name = user.user_metadata?.full_name || user.email || 'User';
+  const email = user.email || '';
+  const avatar = user.user_metadata?.avatar_url;
+  document.getElementById('profName').textContent = name;
+  document.getElementById('profEmail').textContent = email;
+  const av = document.getElementById('profAvatar');
+  if (avatar) av.outerHTML = `<img class="avatar" style="width:40px;height:40px" src="${avatar}" id="profAvatar">`;
+  else av.textContent = name.slice(0, 2).toUpperCase();
+  const uav = document.getElementById('userAvatarEl');
+  if (avatar) uav.innerHTML = `<img class="avatar" src="${avatar}">`;
+  else uav.innerHTML = `<div class="avatar-ph">${name.slice(0, 2).toUpperCase()}</div>`;
 }
+
 // ── Theme & Font ───────────────────────────────────────────────────────
-function setTheme(t,btn){
-  const app=document.getElementById('app');
-  if(t==='dark')app.classList.add('dark');
-  else if(t==='light')app.classList.remove('dark');
-  else{window.matchMedia('(prefers-color-scheme:dark)').matches?app.classList.add('dark'):app.classList.remove('dark');}
-  document.querySelectorAll('#settingsTab .seg-btn').forEach(b=>b.classList.remove('active'));
+function setTheme(t, btn) {
+  const app = document.getElementById('app');
+  if (t === 'dark') app.classList.add('dark');
+  else if (t === 'light') app.classList.remove('dark');
+  else { window.matchMedia('(prefers-color-scheme:dark)').matches ? app.classList.add('dark') : app.classList.remove('dark'); }
+  document.querySelectorAll('#settingsTab .seg-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  localStorage.setItem('theme',t);
+  localStorage.setItem('theme', t);
 }
-function setFs(size,btn){
-  document.documentElement.style.setProperty('--fs',size);
-  btn.closest('.seg').querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));
+
+function setFs(size, btn) {
+  document.documentElement.style.setProperty('--fs', size);
+  btn.closest('.seg').querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  localStorage.setItem('fs',size);
+  localStorage.setItem('fs', size);
 }
+
 // ── Dropdowns ──────────────────────────────────────────────────────────
-document.addEventListener('click',e=>{if(!e.target.closest('.filter-wrap'))closeAllDd()});
-function closeAllDd(){document.querySelectorAll('.filter-dd').forEach(d=>d.classList.remove('open'))}
-function toggleDd(id){const dd=document.getElementById(id);const was=dd.classList.contains('open');closeAllDd();if(!was)dd.classList.add('open')}
-function selCanyon(name,el){
-  canyon=name;
-  document.getElementById('canyonLabel').textContent=name;
-  document.getElementById('calSub').textContent=name;
-  el.closest('.filter-dd').querySelectorAll('.filter-opt').forEach(o=>o.classList.remove('sel'));
+document.addEventListener('click', e => { if (!e.target.closest('.filter-wrap')) closeAllDd(); });
+function closeAllDd() { document.querySelectorAll('.filter-dd').forEach(d => d.classList.remove('open')); }
+function toggleDd(id) { const dd = document.getElementById(id); const was = dd.classList.contains('open'); closeAllDd(); if (!was) dd.classList.add('open'); }
+
+function selCanyon(name, el) {
+  canyon = name;
+  document.getElementById('canyonLabel').textContent = name;
+  document.getElementById('calSub').textContent = name;
+  el.closest('.filter-dd').querySelectorAll('.filter-opt').forEach(o => o.classList.remove('sel'));
   el.classList.add('sel');
   closeAllDd();
-
-  // Rebuild date dropdown for the selected canyon (now dynamic per canyon)
   dateList = getDateListForCanyon(canyon);
-  if(!dateList.includes(dateStr)){
-    const today = todayStr();
-    dateStr = dateList.find(d => d >= today) || dateList[0] || today;
+  if (!dateList.includes(dateStr)) {
+    dateStr = dateList.find(d => d >= todayStr()) || dateList[0] || todayStr();
   }
-  document.getElementById('dateLabel').textContent=fmtFull(dateStr);
+  document.getElementById('dateLabel').textContent = fmtFull(dateStr);
   buildDateDd();
   renderHome();
   renderCal();
 }
-function buildDateDd(){
-  const dd=document.getElementById('dateDd');
-  dd.innerHTML=dateList.map(d=>`<div class="filter-opt${d===dateStr?' sel':''}" onclick="selDate('${d}',this)">${fmtFull(d)}</div>`).join('');
-}
-function selDate(d,el){
-  dateStr=d;
-  document.getElementById('dateLabel').textContent=fmtFull(d);
-  closeAllDd();renderHome();buildDateDd();
-}
-// ── Home ───────────────────────────────────────────────────────────────
-function renderHome(){
-  const day=((allData[canyon]||{})[dateStr])||{};
-  const sold=day.sold||[];
-  document.getElementById('homeSummary').textContent=`${sold.length} booking${sold.length!==1?'s':''} · ${fmtFull(dateStr)}`;
-  const list=document.getElementById('homeList');
-  if(!sold.length){list.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="empty-title">No bookings</div><div class="empty-sub">Nothing scheduled for this day</div></div>`;return;}
-  list.innerHTML=sold.map(s=>`<div class="booking-card"><div class="booking-badges"><span class="badge badge-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${s.time?parseTime(s.time):''}</span></div><div class="booking-co">${s.company||'Unknown'}</div></div>`).join('');
-}
-// ── Calendar ───────────────────────────────────────────────────────────
-function renderCal(){
-  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const days=['Su','Mo','Tu','We','Th','Fr','Sa'];
-  document.getElementById('calMonth').textContent=`${months[calM]} ${calY}`;
-  const grid=document.getElementById('calGrid');
-  grid.innerHTML=days.map(d=>`<div class="cal-dow">${d}</div>`).join('');
-  const first=new Date(calY,calM,1).getDay(),total=new Date(calY,calM+1,0).getDate(),today=todayStr(),cd=allData[canyon]||{};
-  for(let i=0;i<first;i++)grid.innerHTML+=`<div class="cal-day empty"></div>`;
-  for(let d=1;d<=total;d++){
-    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isT=ds===today,isSel=ds===calSel,hasSold=((cd[ds]||{}).sold||[]).length>0;
-    grid.innerHTML+=`<div class="cal-day${isT?' today':''}${isSel&&!isT?' selected':''}" onclick="selCalDay('${ds}')">${d}${hasSold?'<span class="dot"></span>':''}</div>`;
-  }
-  if(!calSel)selCalDay(todayStr());else renderCalDay();
-}
-function selCalDay(d){calSel=d;renderCal();renderCalDay()}
-function calPrev(){calM--;if(calM<0){calM=11;calY--;}renderCal()}
-function calNext(){calM++;if(calM>11){calM=0;calY++;}renderCal()}
-function renderCalDay(){
-  const day=((allData[canyon]||{})[calSel])||{},sold=day.sold||[];
-  const d=new Date(calSel+'T12:00:00');
-  document.getElementById('calDateLabel').textContent=d.toLocaleDateString('en-AU',{weekday:'long',month:'long',day:'numeric'});
-  document.getElementById('calCount').textContent=`${sold.length} booking${sold.length!==1?'s':''}`;
-  const list=document.getElementById('calList');
-  if(!sold.length){list.innerHTML=`<div class="empty-state"><div class="empty-title">No bookings</div><div class="empty-sub">Nothing scheduled</div></div>`;return;}
-  list.innerHTML=sold.map(s=>`<div class="booking-card"><div class="booking-badges"><span class="badge badge-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${s.time?parseTime(s.time):''}</span></div><div class="booking-co">${s.company||'Unknown'}</div></div>`).join('');
-}
-// ── Messages ───────────────────────────────────────────────────────────
-async function setupMsgs(){
-  const {data}=await sb.from('messages').select('*').order('created_at',{ascending:true}).limit(100);
-  if(data)renderMsgs(data);
-  msgChannel=sb.channel('public:messages').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>appendMsg(p.new)).subscribe();
-}
-function renderMsgs(msgs){
-  const list=document.getElementById('msgList');
-  if(!msgs.length){list.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-title">No messages yet</div><div class="empty-sub">Start the conversation!</div></div>`;return;}
-  list.innerHTML=msgs.map(m=>msgHTML(m)).join('');
-  scrollMsgs();
-}
-function appendMsg(msg){
-  const list=document.getElementById('msgList');
-  const empty=list.querySelector('.empty-state');if(empty)empty.remove();
-  list.insertAdjacentHTML('beforeend',msgHTML(msg));
-  scrollMsgs();
-}
-function msgHTML(msg){
-  const mine=user&&msg.user_id===user.id;
-  const t=new Date(msg.created_at).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true});
-  return`<div style="display:flex;flex-direction:column;align-items:${mine?'flex-end':'flex-start'}">${!mine?`<div class="msg-name">${msg.username||'Staff'}</div>`:''}<div class="msg-bubble ${mine?'mine':'theirs'}">${msg.message}<div class="msg-time">${t}</div></div></div>`;
-}
-async function sendMsg(){
-  const input=document.getElementById('msgInput'),text=input.value.trim();
-  if(!text||!user)return;
-  input.value='';
-  const name=user.user_metadata?.full_name||user.email||'Staff';
-  await sb.from('messages').insert({user_id:user.id,username:name,message:text});
-}
-function scrollMsgs(){const l=document.getElementById('msgList');l.scrollTop=l.scrollHeight}
-// ── Data ───────────────────────────────────────────────────────────────
-async function loadData(manual){
-  const btn=document.getElementById('refreshBtn');
-  if(btn)btn.querySelector('svg').classList.add('spinning');
-  try{
-    const res=await fetch(DATA_URL+'?t='+Date.now());
-    const json=await res.json();
-    allData=json.data||{};
 
-    // Populate canyon dropdown from whatever Canyon.py put in data.json (only the 3 canyons)
+function buildDateDd() {
+  const dd = document.getElementById('dateDd');
+  dd.innerHTML = dateList.map(d =>
+    `<div class="filter-opt${d === dateStr ? ' sel' : ''}" onclick="selDate('${d}',this)">${fmtFull(d)}</div>`
+  ).join('');
+}
+
+function selDate(d, el) {
+  dateStr = d;
+  document.getElementById('dateLabel').textContent = fmtFull(d);
+  closeAllDd();
+  renderHome();
+  buildDateDd();
+}
+
+// ── Home ───────────────────────────────────────────────────────────────
+function renderHome() {
+  const day = ((allData[canyon] || {})[dateStr]) || {};
+  const sold = day.sold || [];
+  document.getElementById('homeSummary').textContent =
+    `${sold.length} booking${sold.length !== 1 ? 's' : ''} · ${fmtFull(dateStr)}`;
+  const list = document.getElementById('homeList');
+  if (!sold.length) {
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="empty-title">No bookings</div>
+      <div class="empty-sub">Nothing scheduled for this day</div>
+    </div>`;
+    return;
+  }
+  list.innerHTML = sold.map(s => `
+    <div class="booking-card">
+      <div class="booking-badges">
+        <span class="badge badge-time">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${s.time ? parseTime(s.time) : '—'}
+        </span>
+      </div>
+      <div class="booking-co">${s.company || 'Unknown'}</div>
+    </div>`).join('');
+}
+
+// ── Calendar ───────────────────────────────────────────────────────────
+function renderCal() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  document.getElementById('calMonth').textContent = `${months[calM]} ${calY}`;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = days.map(d => `<div class="cal-dow">${d}</div>`).join('');
+  const first = new Date(calY, calM, 1).getDay();
+  const total = new Date(calY, calM + 1, 0).getDate();
+  const today = todayStr();
+  const cd = allData[canyon] || {};
+  for (let i = 0; i < first; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= total; d++) {
+    const ds = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isT = ds === today, isSel = ds === calSel;
+    const hasSold = ((cd[ds] || {}).sold || []).length > 0;
+    grid.innerHTML += `<div class="cal-day${isT?' today':''}${isSel&&!isT?' selected':''}" onclick="selCalDay('${ds}')">${d}${hasSold?'<span class="dot"></span>':''}</div>`;
+  }
+  if (!calSel) selCalDay(todayStr());
+  else renderCalDay();
+}
+
+function selCalDay(d) { calSel = d; renderCal(); renderCalDay(); }
+function calPrev() { calM--; if (calM < 0) { calM = 11; calY--; } renderCal(); }
+function calNext() { calM++; if (calM > 11) { calM = 0; calY++; } renderCal(); }
+
+function renderCalDay() {
+  const day = ((allData[canyon] || {})[calSel]) || {}, sold = day.sold || [];
+  const d = new Date(calSel + 'T12:00:00');
+  document.getElementById('calDateLabel').textContent = d.toLocaleDateString('en-AU', {weekday:'long', month:'long', day:'numeric'});
+  document.getElementById('calCount').textContent = `${sold.length} booking${sold.length !== 1 ? 's' : ''}`;
+  const list = document.getElementById('calList');
+  if (!sold.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-title">No bookings</div><div class="empty-sub">Nothing scheduled</div></div>`;
+    return;
+  }
+  list.innerHTML = sold.map(s => `
+    <div class="booking-card">
+      <div class="booking-badges">
+        <span class="badge badge-time">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${s.time ? parseTime(s.time) : '—'}
+        </span>
+      </div>
+      <div class="booking-co">${s.company || 'Unknown'}</div>
+    </div>`).join('');
+}
+
+// ── Messages ───────────────────────────────────────────────────────────
+async function setupMsgs() {
+  const {data} = await sb.from('messages').select('*').order('created_at', {ascending:true}).limit(100);
+  if (data) renderMsgs(data);
+  msgChannel = sb.channel('public:messages')
+    .on('postgres_changes', {event:'INSERT', schema:'public', table:'messages'}, p => appendMsg(p.new))
+    .subscribe();
+}
+
+function renderMsgs(msgs) {
+  const list = document.getElementById('msgList');
+  if (!msgs.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-title">No messages yet</div><div class="empty-sub">Start the conversation!</div></div>`;
+    return;
+  }
+  list.innerHTML = msgs.map(m => msgHTML(m)).join('');
+  scrollMsgs();
+}
+
+function appendMsg(msg) {
+  const list = document.getElementById('msgList');
+  const empty = list.querySelector('.empty-state');
+  if (empty) empty.remove();
+  list.insertAdjacentHTML('beforeend', msgHTML(msg));
+  scrollMsgs();
+}
+
+function msgHTML(msg) {
+  const mine = user && msg.user_id === user.id;
+  const t = new Date(msg.created_at).toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true});
+  return `<div style="display:flex;flex-direction:column;align-items:${mine?'flex-end':'flex-start'}">
+    ${!mine ? `<div class="msg-name">${msg.username||'Staff'}</div>` : ''}
+    <div class="msg-bubble ${mine?'mine':'theirs'}">${msg.message}<div class="msg-time">${t}</div></div>
+  </div>`;
+}
+
+async function sendMsg() {
+  const input = document.getElementById('msgInput'), text = input.value.trim();
+  if (!text || !user) return;
+  input.value = '';
+  const name = user.user_metadata?.full_name || user.email || 'Staff';
+  await sb.from('messages').insert({user_id:user.id, username:name, message:text});
+}
+
+function scrollMsgs() { const l = document.getElementById('msgList'); l.scrollTop = l.scrollHeight; }
+
+// ── Data ───────────────────────────────────────────────────────────────
+async function loadData(manual) {
+  const btn = document.getElementById('refreshBtn');
+  if (btn) btn.querySelector('svg').classList.add('spinning');
+  try {
+    const res = await fetch(DATA_URL + '?t=' + Date.now());
+    const json = await res.json();
+
+    // Canyon.py output: { updated: "2026-04-16 06:00", data: { "Empress": { "2026-04-16": { sold: [] } } } }
+    allData = json.data || {};
+
+    // Show last updated banner
+    if (json.updated) showUpdatedBar(json.updated);
+
+    // Populate canyon dropdown from actual data keys
     populateCanyons();
 
-    // Auto-select first canyon if current one is missing
-    const availableCanyons = Object.keys(allData);
-    if(availableCanyons.length > 0 && (!canyon || !allData[canyon])){
-      canyon = availableCanyons[0]; // will be Empress / Grand Canyon / Narrow Neck in preferred order
+    // Auto-select first available canyon if current is missing
+    const available = Object.keys(allData);
+    if (available.length > 0 && (!canyon || !allData[canyon])) {
+      canyon = CANYON_ORDER.find(c => allData[c]) || available[0];
     }
     document.getElementById('canyonLabel').textContent = canyon;
     document.getElementById('calSub').textContent = canyon;
 
-    // Dates are now specific to the selected canyon
+    // Dates for selected canyon
     dateList = getDateListForCanyon(canyon);
-    if(!dateStr || !dateList.includes(dateStr)){
-      dateStr = dateList.find(d=>d>=todayStr()) || dateList[0] || todayStr();
+    if (!dateStr || !dateList.includes(dateStr)) {
+      dateStr = dateList.find(d => d >= todayStr()) || dateList[0] || todayStr();
     }
-    document.getElementById('dateLabel').textContent=fmtFull(dateStr);
+    document.getElementById('dateLabel').textContent = fmtFull(dateStr);
     buildDateDd();
     renderHome();
-    if(calSel) renderCal();
-  }catch(e){if(manual)alert('Could not refresh. Check connection.')}
-  if(btn)btn.querySelector('svg').classList.remove('spinning');
-}
-// ── Init ───────────────────────────────────────────────────────────────
-async function init(){
-  // Restore preferences
-  const savedTheme=localStorage.getItem('theme');
-  const savedFs=localStorage.getItem('fs');
-  if(savedTheme){
-    const app=document.getElementById('app');
-    if(savedTheme==='dark')app.classList.add('dark');
-    else if(savedTheme==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches)app.classList.add('dark');
+    renderCal();
+
+  } catch(e) {
+    if (manual) alert('Could not refresh. Check your connection.');
   }
-  if(savedFs)document.documentElement.style.setProperty('--fs',savedFs);
-  const {data:{session}}=await sb.auth.getSession();
-  if(session){
-    user=session.user;
-    const {data:prof}=await sb.from('profiles').select('*').eq('id',user.id).single();
-    profile=prof;
-    if(!profile||!profile.onboarding_complete){
+  if (btn) btn.querySelector('svg').classList.remove('spinning');
+}
+
+// ── Init ───────────────────────────────────────────────────────────────
+async function init() {
+  // Restore saved preferences
+  const savedTheme = localStorage.getItem('theme');
+  const savedFs = localStorage.getItem('fs');
+  if (savedTheme) {
+    const app = document.getElementById('app');
+    if (savedTheme === 'dark') app.classList.add('dark');
+    else if (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme:dark)').matches) app.classList.add('dark');
+    // Restore the active theme button
+    const thMap = {light:'thL', dark:'thD', system:'thS'};
+    if (thMap[savedTheme]) {
+      document.querySelectorAll('#settingsTab .seg').forEach(seg => {
+        seg.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      });
+      document.getElementById(thMap[savedTheme])?.classList.add('active');
+    }
+  }
+  if (savedFs) {
+    document.documentElement.style.setProperty('--fs', savedFs);
+  }
+
+  const {data:{session}} = await sb.auth.getSession();
+  if (session) {
+    user = session.user;
+    const {data:prof} = await sb.from('profiles').select('*').eq('id', user.id).single();
+    profile = prof;
+    if (!profile || !profile.onboarding_complete) {
       showScreen('onboardScreen');
     } else {
       showScreen('appScreen');
       updateProfileUI();
       loadData();
       setupMsgs();
-      calSel=todayStr();
-      dateStr=todayStr();
+      calSel = todayStr();
+      dateStr = todayStr();
     }
   } else {
     showScreen('loginScreen');
   }
-  sb.auth.onAuthStateChange(async(event,session)=>{
-    if(event==='SIGNED_IN'&&session){
-      user=session.user;
-      const {data:prof}=await sb.from('profiles').select('*').eq('id',user.id).single();
-      profile=prof;
-      if(!profile||!profile.onboarding_complete){
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      user = session.user;
+      const {data:prof} = await sb.from('profiles').select('*').eq('id', user.id).single();
+      profile = prof;
+      if (!profile || !profile.onboarding_complete) {
         showScreen('onboardScreen');
       } else {
         showScreen('appScreen');
         updateProfileUI();
         loadData();
         setupMsgs();
-        calSel=todayStr();
-        dateStr=todayStr();
+        calSel = todayStr();
+        dateStr = todayStr();
       }
-    } else if(event==='SIGNED_OUT'){
+    } else if (event === 'SIGNED_OUT') {
       showScreen('loginScreen');
     }
   });
 }
-dateStr=todayStr();calSel=todayStr();
+
+dateStr = todayStr();
+calSel = todayStr();
 init();
-setInterval(loadData,3600000);
+// Auto-refresh every hour (matches Canyon.py scrape schedule)
+setInterval(loadData, 3600000);
 </script>
 </body>
 </html>
