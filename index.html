@@ -1,455 +1,590 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Empress – Chat</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    * { font-family: 'DM Sans', system-ui, sans-serif; box-sizing: border-box; }
-    body { background: #0a0a0f; color: #f0f0f5; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+    <title>Canyon Bookings Pro</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Canyon">
+    <meta name="theme-color" content="#c45e2a">
 
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    .sidebar { width: 280px; background: #111118; border-right: 1px solid #1e1e2a; display: flex; flex-direction: column; height: 100vh; }
-    .main    { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    <style>
+        /* --- CORE SYSTEM & VARIABLES --- */
+        :root {
+            --bg: #f0ece6;
+            --surface: #ffffff;
+            --surface2: #e8e4de;
+            --border: #ddd8d0;
+            --text: #1a1208;
+            --text2: #6b6050;
+            --text3: #a89880;
+            --accent: #c45e2a;
+            --accent-bg: #fdf0e8;
+            --accent-light: #f5e0cc;
+            --nav: #ffffff;
+            --radius: 16px;
+            --font: 'Inter', -apple-system, sans-serif;
+            --fs: 15px; /* Scalable Font Variable */
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
 
-    .conv-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: background 0.15s; }
-    .conv-item:hover   { background: #1a1a25; }
-    .conv-item.active  { background: #1e1a2e; }
+        .dark {
+            --bg: #1a1510;
+            --surface: #242018;
+            --surface2: #2e2820;
+            --border: #3a3228;
+            --text: #f5f0e8;
+            --text2: #a89070;
+            --text3: #706050;
+            --accent: #e07840;
+            --accent-bg: #2a1e10;
+            --accent-light: #3a2818;
+            --nav: #1e1a14;
+        }
 
-    .avatar { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: #000; 
+            font-family: var(--font); 
+            font-size: var(--fs); 
+            color: var(--text);
+            transition: font-size 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    .bubble { max-width: 70%; padding: 10px 16px; border-radius: 18px; line-height: 1.5; font-size: 14px; }
-    .bubble.mine   { background: linear-gradient(135deg, #7c3aed, #9333ea); color: #fff; border-bottom-right-radius: 4px; }
-    .bubble.theirs { background: #1e1e2a; color: #e0e0ee; border-bottom-left-radius: 4px; }
+        body { display: flex; justify-content: center; background: var(--bg); }
 
-    .ts { font-size: 10px; opacity: 0.5; margin-top: 4px; text-align: right; }
+        .app-shell {
+            width: 100%;
+            max-width: 430px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
 
-    #message-input { background: #1a1a25; border: 1px solid #2a2a38; border-radius: 14px; color: #f0f0f5; padding: 12px 20px; width: 100%; font-size: 14px; outline: none; transition: border-color 0.2s; }
-    #message-input:focus { border-color: #7c3aed; }
-    #message-input::placeholder { color: #555; }
+        /* --- SCREEN MANAGEMENT --- */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+            animation: screen-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .screen.active { display: flex; }
 
-    .send-btn { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #9333ea); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.2s; }
-    .send-btn:hover { opacity: 0.85; }
+        @keyframes screen-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    /* Auth overlay */
-    #auth-overlay { position: fixed; inset: 0; background: #0a0a0f; display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .auth-card { background: #111118; border: 1px solid #1e1e2a; border-radius: 20px; padding: 40px; width: 360px; }
-    .auth-input { background: #1a1a25; border: 1px solid #2a2a38; border-radius: 10px; color: #f0f0f5; padding: 10px 14px; width: 100%; font-size: 14px; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
-    .auth-input:focus { border-color: #7c3aed; }
-    .auth-btn { width: 100%; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #7c3aed, #9333ea); border: none; color: #fff; font-weight: 600; cursor: pointer; font-size: 14px; margin-bottom: 8px; }
-    .auth-btn.secondary { background: transparent; border: 1px solid #2a2a38; color: #aaa; }
-    .auth-error { color: #f87171; font-size: 13px; margin-top: 8px; min-height: 18px; }
+        /* --- AUTH & ONBOARDING --- */
+        .auth-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 24px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 50; }
-    .modal { background: #111118; border: 1px solid #1e1e2a; border-radius: 16px; padding: 28px; width: 340px; }
-    .modal input { background: #1a1a25; border: 1px solid #2a2a38; border-radius: 10px; color: #f0f0f5; padding: 10px 14px; width: 100%; font-size: 14px; outline: none; margin-bottom: 10px; }
-    .modal input:focus { border-color: #7c3aed; }
+        .logo-box {
+            width: 80px; height: 80px;
+            background: var(--accent-bg);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; margin-bottom: 24px;
+            box-shadow: 0 10px 20px rgba(196, 94, 42, 0.1);
+        }
 
-    .loading { display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px; padding: 20px; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: #7c3aed; animation: bounce 1s infinite; }
-    .dot:nth-child(2) { animation-delay: 0.15s; }
-    .dot:nth-child(3) { animation-delay: 0.3s; }
-    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-    #messages { flex: 1; overflow-y: auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; }
-  </style>
+        .onboard-step { display: none; width: 100%; flex-direction: column; gap: 20px; }
+        .onboard-step.active { display: flex; }
+
+        .role-option {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .role-option.selected { border-color: var(--accent); background: var(--accent-bg); }
+
+        /* --- NAVIGATION & HEADERS --- */
+        header {
+            padding: calc(50px + var(--safe-top)) 20px 12px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .header-left h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+        .header-sub { font-size: 12px; color: var(--text2); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+        .nav-bar {
+            padding-bottom: var(--safe-bottom);
+            background: var(--nav);
+            border-top: 1px solid var(--border);
+            display: flex;
+            height: calc(65px + var(--safe-bottom));
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text3);
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .nav-btn.active { color: var(--accent); }
+        .nav-btn svg { width: 22px; height: 22px; }
+
+        /* --- COMPONENT STYLES --- */
+        .scroll-view { flex: 1; overflow-y: auto; padding: 10px 20px 20px; }
+        
+        .booking-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: transform 0.1s;
+        }
+
+        .time-badge {
+            background: var(--accent-bg);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            display: inline-block;
+        }
+
+        /* --- CALENDAR SYSTEM --- */
+        .cal-wrapper { padding: 0 20px; }
+        .cal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 16px; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cal-day-label { font-size: 10px; font-weight: 800; color: var(--text3); text-align: center; margin-bottom: 8px; }
+        .cal-cell { 
+            aspect-ratio: 1; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 14px; font-weight: 600; border-radius: 12px; 
+            cursor: pointer; position: relative;
+        }
+        .cal-cell.today { background: var(--accent); color: white; }
+        .cal-cell.has-data::after {
+            content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px;
+            background: var(--accent); border-radius: 50%;
+        }
+
+        /* --- SETTINGS ROWS --- */
+        .settings-sec { margin-bottom: 24px; }
+        .sec-title { font-size: 11px; font-weight: 800; color: var(--text3); text-transform: uppercase; margin: 0 20px 10px; }
+        .row-group { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .row { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .row:last-child { border-bottom: none; }
+
+        .seg-control { display: flex; background: var(--surface2); padding: 3px; border-radius: 10px; gap: 4px; }
+        .seg-btn { padding: 6px 14px; border: none; background: none; font-size: 12px; font-weight: 700; color: var(--text2); border-radius: 7px; cursor: pointer; }
+        .seg-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* --- MESSAGING UI --- */
+        .msg-container { flex: 1; display: flex; flex-direction: column; background: var(--surface2); }
+        .msg-list { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
+        .bubble.me { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .bubble.them { align-self: flex-start; background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; }
+        .msg-input-bar { padding: 12px 20px; background: var(--surface); display: flex; gap: 10px; padding-bottom: calc(12px + var(--safe-bottom)); }
+        .msg-input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border); background: var(--bg); outline: none; }
+
+        /* --- DROPDOWN --- */
+        .dropdown { position: absolute; top: calc(100% + 5px); left: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 200; display: none; }
+        .dropdown.open { display: block; }
+        .dd-item { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; }
+        .dd-item:last-child { border-bottom: none; }
+    </style>
 </head>
 <body>
 
-<!-- ===== AUTH OVERLAY ===== -->
-<div id="auth-overlay">
-  <div class="auth-card">
-    <div style="margin-bottom:28px">
-      <h1 style="font-size:24px;font-weight:700;margin-bottom:4px">💬 Empress</h1>
-      <p style="color:#666;font-size:13px" id="auth-subtitle">Sign in to your workspace</p>
+    <div class="app-shell">
+
+        <div class="screen active" id="loading">
+            <div class="auth-container">
+                <div class="logo-box">⛰️</div>
+                <div style="width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+            </div>
+        </div>
+
+        <div class="screen" id="auth">
+            <div class="auth-container">
+                <div class="logo-box">🏔️</div>
+                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 12px;">Canyon Bookings</h1>
+                <p style="color: var(--text2); margin-bottom: 32px;">Manage your trips and coordinate with your crew.</p>
+                <button class="btn-primary" onclick="goToOnboarding()">Continue with Google</button>
+            </div>
+        </div>
+
+        <div class="screen" id="onboarding">
+            <header><div class="header-left"><h1>Setup</h1></div></header>
+            <div class="scroll-view">
+                <div class="onboard-step active" id="step-role">
+                    <h2 style="font-size: 20px;">What is your role?</h2>
+                    <div class="role-option" id="opt-guide" onclick="selectRole('guide')">
+                        <div style="font-size: 18px; font-weight: 700;">🧗 Guide</div>
+                        <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">I lead trips and need to see my schedule.</div>
+                    </div>
+                    <div class="role-option" id="opt-owner" onclick="selectRole('owner')">
+                        <div style="font-size: 18px; font-weight: 700;">🏢 Business Owner</div>
+                        <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">I run a company and manage multiple guides.</div>
+                    </div>
+                    <button class="btn-primary" onclick="onboardNext(2)">Continue</button>
+                </div>
+                <div class="onboard-step" id="step-org">
+                    <h2 style="font-size: 20px;">Join an Organisation</h2>
+                    <input type="text" placeholder="Search Company Name..." style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border);">
+                    <div style="padding: 20px; border: 1px dashed var(--border); border-radius: 12px; text-align: center; color: var(--text3);">No results found</div>
+                    <button class="btn-primary" onclick="finishOnboarding()">Complete Setup</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="main">
+            
+            <div class="screen active" id="home-tab">
+                <header>
+                    <div class="header-left">
+                        <h1>Canyon Bookings</h1>
+                        <button class="header-sub" onclick="toggleDD()">
+                            <span id="current-canyon-label">Empress Canyon</span> ▼
+                        </button>
+                    </div>
+                    <div class="icon-action-btn" onclick="syncData()" style="cursor:pointer">🔄</div>
+                </header>
+
+                <div class="dropdown" id="canyon-dd">
+                    </div>
+
+                <div class="scroll-view" id="booking-list">
+                    </div>
+            </div>
+
+            <div class="screen" id="cal-tab">
+                <header>
+                    <div class="header-left">
+                        <h1>Calendar</h1>
+                        <select id="cal-canyon-select" style="background:none; border:none; font-weight:600; font-size:12px; color:var(--text2); outline:none;" onchange="updateCanyon(this.value)">
+                            </select>
+                    </div>
+                </header>
+                <div class="cal-wrapper">
+                    <div class="cal-box">
+                        <div class="cal-header">
+                            <button onclick="changeMonth(-1)" style="background:none; border:none; font-size:20px;">‹</button>
+                            <div style="font-weight:800;" id="cal-month-title">April 2026</div>
+                            <button onclick="changeMonth(1)" style="background:none; border:none; font-size:20px;">›</button>
+                        </div>
+                        <div class="cal-grid" id="cal-grid">
+                            </div>
+                    </div>
+                </div>
+                <div class="scroll-view" id="cal-details">
+                    <p style="text-align:center; color:var(--text3); margin-top:30px;">Select a date to see trips</p>
+                </div>
+            </div>
+
+            <div class="screen" id="msg-tab">
+                <header><div class="header-left"><h1>Crew Chat</h1></div></header>
+                <div class="msg-container">
+                    <div class="msg-list" id="msg-list">
+                        <div class="bubble them">Hey team, Empress is running high today. Check the water levels.</div>
+                        <div class="bubble me">Copy that, I'll take the backup ropes just in case.</div>
+                    </div>
+                    <div class="msg-input-bar">
+                        <input type="text" class="msg-input" placeholder="Message crew...">
+                        <button style="background:var(--accent); color:white; border:none; border-radius:50%; width:40px; height:40px;">↗</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen" id="set-tab">
+                <header><div class="header-left"><h1>Settings</h1></div></header>
+                <div class="scroll-view">
+                    
+                    <div class="settings-sec">
+                        <div class="sec-title">Appearance</div>
+                        <div class="row-group">
+                            <div class="row">
+                                <span>Dark Mode</span>
+                                <div class="seg-control">
+                                    <button class="seg-btn active" onclick="setTheme('light', this)">Off</button>
+                                    <button class="seg-btn" onclick="setTheme('dark', this)">On</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <span>Text Size</span>
+                                <div class="seg-control">
+                                    <button class="seg-btn" onclick="setFS('13px', this)">S</button>
+                                    <button class="seg-btn active" onclick="setFS('15px', this)">M</button>
+                                    <button class="seg-btn" onclick="setFS('18px', this)">L</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-sec">
+                        <div class="sec-title">Personal</div>
+                        <div class="row-group">
+                            <div class="row"><span>My Profile</span><span>›</span></div>
+                            <div class="row"><span>Notifications</span><span>On</span></div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" style="background:var(--surface); border:1px solid var(--border); color:#ff4444; margin-top:20px;" onclick="location.reload()">Sign Out</button>
+
+                </div>
+            </div>
+
+            <nav class="nav-bar">
+                <button class="nav-btn active" onclick="showTab('home', this)">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
+                </button>
+                <button class="nav-btn" onclick="showTab('cal', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Calendar
+                </button>
+                <button class="nav-btn" onclick="showTab('msg', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3z"></path></svg>Messages
+                </button>
+                <button class="nav-btn" onclick="showTab('set', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Settings
+                </button>
+            </nav>
+        </div>
     </div>
-    <div id="auth-form-login">
-      <input class="auth-input" type="email" id="login-email" placeholder="Email">
-      <input class="auth-input" type="password" id="login-password" placeholder="Password">
-      <button class="auth-btn" onclick="signIn()">Sign In</button>
-      <button class="auth-btn secondary" onclick="showSignup()">Create Account</button>
-      <div class="auth-error" id="login-error"></div>
-    </div>
-    <div id="auth-form-signup" style="display:none">
-      <input class="auth-input" type="text" id="signup-name" placeholder="Your name">
-      <input class="auth-input" type="email" id="signup-email" placeholder="Email">
-      <input class="auth-input" type="password" id="signup-password" placeholder="Password (min 6 chars)">
-      <button class="auth-btn" onclick="signUp()">Create Account</button>
-      <button class="auth-btn secondary" onclick="showLogin()">Back to Sign In</button>
-      <div class="auth-error" id="signup-error"></div>
-    </div>
-  </div>
-</div>
 
-<!-- ===== MAIN APP ===== -->
-<div style="display:none; height:100vh; flex-direction:row" id="app" class="flex">
+    <script>
+        // --- STATE ---
+        const CANYONS = ["Empress Canyon", "Grand Canyon", "Narrow Neck", "Mt Hay", "Bowens Creek"];
+        let currentCanyon = "Empress Canyon";
+        let bookingData = {};
+        let viewM = new Date().getMonth(), viewY = new Date().getFullYear();
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div style="padding:16px;border-bottom:1px solid #1e1e2a;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <h1 style="font-size:18px;font-weight:700">💬 Empress</h1>
-        <p id="user-email-display" style="font-size:11px;color:#555;margin-top:2px"></p>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button onclick="openNewDM()" title="New DM" style="background:#1e1e2a;border:none;color:#aaa;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">+</button>
-        <button onclick="signOut()" title="Sign out" style="background:#1e1e2a;border:none;color:#aaa;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px">↩</button>
-      </div>
-    </div>
-    <div style="padding:8px 12px;margin:8px;background:#1e1a2e;border-radius:10px">
-      <p style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#666;margin-bottom:4px">Channels</p>
-      <div class="conv-item active" id="team-chat-item" onclick="switchConversation('eb7d79df-f157-4201-9c67-e621bdfa984e','Team Chat','group')">
-        <div class="avatar">👥</div>
-        <div><p style="font-size:14px;font-weight:500">Team Chat</p><p style="font-size:11px;color:#555">group</p></div>
-      </div>
-    </div>
-    <div style="padding:8px 12px">
-      <p style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#666;margin-bottom:4px;padding:0 4px">Direct Messages</p>
-      <div id="dm-list"></div>
-    </div>
-  </div>
+        // --- NAVIGATION & UI ---
+        function showScreen(id) {
+            document.querySelectorAll('.app-shell > .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
 
-  <!-- Main -->
-  <div class="main">
-    <div style="height:56px;border-bottom:1px solid #1e1e2a;display:flex;align-items:center;padding:0 20px;background:#0d0d15;flex-shrink:0">
-      <h2 id="chat-name" style="font-size:16px;font-weight:600">Team Chat</h2>
-      <span id="chat-type-badge" style="margin-left:10px;font-size:10px;background:#1e1e2a;padding:2px 8px;border-radius:6px;color:#666">group</span>
-    </div>
+        function showTab(tab, btn) {
+            document.querySelectorAll('#main > .screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            btn.classList.add('active');
+            if(tab === 'cal') renderCalendar();
+        }
 
-    <div id="messages">
-      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Loading messages…</span></div>
-    </div>
+        function toggleDD() { document.getElementById('canyon-dd').classList.toggle('open'); }
 
-    <div style="padding:12px 16px;border-top:1px solid #1e1e2a;background:#0d0d15;flex-shrink:0">
-      <div style="display:flex;gap:10px;align-items:center">
-        <input id="message-input" type="text" placeholder="Message…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}">
-        <button class="send-btn" onclick="sendMessage()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+        // --- AUTH & ONBOARDING ---
+        function goToOnboarding() { showScreen('onboarding'); }
+        
+        let userRole = '';
+        function selectRole(role) {
+            userRole = role;
+            document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+            document.getElementById('opt-' + role).classList.add('selected');
+        }
 
-<!-- New DM Modal -->
-<div id="dm-modal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:16px">New Direct Message</h3>
-    <input type="email" id="dm-email" placeholder="Enter user's email address">
-    <div style="color:#f87171;font-size:13px;min-height:18px;margin-bottom:10px" id="dm-error"></div>
-    <div style="display:flex;gap:8px">
-      <button onclick="createDM()" style="flex:1;padding:10px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#9333ea);border:none;color:#fff;font-weight:600;cursor:pointer">Start DM</button>
-      <button onclick="closeDMModal()" style="flex:1;padding:10px;border-radius:10px;background:#1a1a25;border:1px solid #2a2a38;color:#aaa;cursor:pointer">Cancel</button>
-    </div>
-  </div>
-</div>
+        function onboardNext(step) {
+            if(step === 2) {
+                document.getElementById('step-role').classList.remove('active');
+                document.getElementById('step-org').classList.add('active');
+            }
+        }
 
-<script>
-// ========================= SUPABASE =========================
-const SUPABASE_URL = 'https://akgftmrraboplxpeugvi.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_aobHSo8qxS8sM85c5qO1Tw_R2-8NyO7';
-const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        function finishOnboarding() { showScreen('main'); syncData(); }
 
-let currentUser = null;
-let currentConversationId = 'eb7d79df-f157-4201-9c67-e621bdfa984e';
-let currentChannel = null;
-let userProfiles = {}; // cache display names
+        // --- CORE DATA ENGINE ---
+        // Forced Time Format: 9:30am
+        function formatTime(str) {
+            const [h, m] = str.split(':');
+            let hour = parseInt(h);
+            const ampm = hour >= 12 ? 'pm' : 'am';
+            hour = hour % 12 || 12;
+            return `${hour}:${m}${ampm}`;
+        }
 
-// ========================= AUTH =========================
-function showSignup() {
-  document.getElementById('auth-form-login').style.display = 'none';
-  document.getElementById('auth-form-signup').style.display = 'block';
-  document.getElementById('auth-subtitle').textContent = 'Create your account';
-}
-function showLogin() {
-  document.getElementById('auth-form-login').style.display = 'block';
-  document.getElementById('auth-form-signup').style.display = 'none';
-  document.getElementById('auth-subtitle').textContent = 'Sign in to your workspace';
-}
+        async function syncData() {
+            // Mock Data Integration
+            bookingData = {
+                "Empress Canyon": {
+                    "2026-04-17": ["09:30", "11:00", "14:15"],
+                    "2026-04-18": ["10:00"]
+                },
+                "Grand Canyon": {
+                    "2026-04-17": ["08:45", "13:30"]
+                }
+            };
+            populateCanyons();
+            renderBookings();
+            setTimeout(() => {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('auth').classList.add('active');
+            }, 800);
+        }
 
-async function signIn() {
-  const email = document.getElementById('login-email').value.trim();
-  const pw    = document.getElementById('login-password').value;
-  document.getElementById('login-error').textContent = '';
-  const { error } = await db.auth.signInWithPassword({ email, password: pw });
-  if (error) { document.getElementById('login-error').textContent = error.message; return; }
-  await boot();
-}
+        function populateCanyons() {
+            const dd = document.getElementById('canyon-dd');
+            const sel = document.getElementById('cal-canyon-select');
+            
+            dd.innerHTML = CANYONS.map(c => `
+                <div class="dd-item" onclick="updateCanyon('${c}')">${c}</div>
+            `).join('');
 
-async function signUp() {
-  const name  = document.getElementById('signup-name').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const pw    = document.getElementById('signup-password').value;
-  document.getElementById('signup-error').textContent = '';
-  const { data, error } = await db.auth.signUp({ email, password: pw, options: { data: { full_name: name } } });
-  if (error) { document.getElementById('signup-error').textContent = error.message; return; }
-  // Auto sign-in after signup
-  if (data.session) { await boot(); }
-  else { document.getElementById('signup-error').style.color='#86efac'; document.getElementById('signup-error').textContent = 'Account created! Check your email to confirm, then sign in.'; }
-}
+            sel.innerHTML = CANYONS.map(c => `
+                <option value="${c}" ${c === currentCanyon ? 'selected' : ''}>${c}</option>
+            `).join('');
+        }
 
-async function signOut() {
-  await db.auth.signOut();
-  location.reload();
-}
+        function updateCanyon(name) {
+            currentCanyon = name;
+            document.getElementById('current-canyon-label').textContent = name;
+            document.getElementById('cal-canyon-select').value = name;
+            document.getElementById('canyon-dd').classList.remove('open');
+            renderBookings();
+            renderCalendar();
+        }
 
-// ========================= BOOT =========================
-async function boot() {
-  const { data: { user } } = await db.auth.getUser();
-  if (!user) return;
-  currentUser = user;
+        function renderBookings() {
+            const list = document.getElementById('booking-list');
+            const today = "2026-04-17";
+            const trips = (bookingData[currentCanyon] && bookingData[currentCanyon][today]) || [];
 
-  document.getElementById('auth-overlay').style.display = 'none';
-  const app = document.getElementById('app');
-  app.style.display = 'flex';
-  document.getElementById('user-email-display').textContent = user.email;
+            if(trips.length === 0) {
+                list.innerHTML = `<p style="text-align:center; padding:50px; color:var(--text3)">No trips today for ${currentCanyon}</p>`;
+                return;
+            }
 
-  await ensureTeamChatParticipant();
-  await loadDMList();
-  await loadMessages();
-  subscribeToMessages();
-}
+            list.innerHTML = trips.map(t => `
+                <div class="booking-card">
+                    <div class="time-badge">${formatTime(t)}</div>
+                    <div style="font-weight:800; margin-top:12px; font-size:16px;">${currentCanyon} Trip</div>
+                    <div style="font-size:13px; color:var(--text2); margin-top:4px;">6 Clients • Lead: J. Wilson</div>
+                </div>
+            `).join('');
+        }
 
-async function ensureTeamChatParticipant() {
-  // Try to add user to Team Chat if not already there (silent fail is fine)
-  try {
-    await db.from('conversation_participants').upsert(
-      { conversation_id: 'eb7d79df-f157-4201-9c67-e621bdfa984e', user_id: currentUser.id },
-      { onConflict: 'conversation_id,user_id', ignoreDuplicates: true }
-    );
-  } catch(e) { /* RLS may deny insert — that's ok if already present */ }
-}
+        // --- CALENDAR ENGINE ---
+        function renderCalendar() {
+            const grid = document.getElementById('cal-grid');
+            const title = document.getElementById('cal-month-title');
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            title.textContent = `${monthNames[viewM]} ${viewY}`;
+            grid.innerHTML = ['M','T','W','T','F','S','S'].map(d => `<div class="cal-day-label">${d}</div>`).join('');
 
-// ========================= CONVERSATIONS =========================
-async function loadDMList() {
-  const { data, error } = await db
-    .from('conversations')
-    .select('id, name, type, conversation_participants!inner(user_id)')
-    .eq('conversation_participants.user_id', currentUser.id)
-    .eq('type', 'dm');
+            const firstDay = new Date(viewY, viewM, 1).getDay();
+            const daysInMonth = new Date(viewY, viewM + 1, 0).getDate();
+            const offset = (firstDay === 0) ? 6 : firstDay - 1;
 
-  const list = document.getElementById('dm-list');
-  list.innerHTML = '';
-  if (!data) return;
+            for(let i=0; i<offset; i++) grid.appendChild(document.createElement('div'));
 
-  data.forEach(conv => {
-    const item = document.createElement('div');
-    item.className = 'conv-item' + (conv.id === currentConversationId ? ' active' : '');
-    item.id = 'conv-' + conv.id;
-    item.innerHTML = `<div class="avatar" style="font-size:16px">👤</div>
-      <div><p style="font-size:14px;font-weight:500">${conv.name || 'DM'}</p><p style="font-size:11px;color:#555">direct</p></div>`;
-    item.onclick = () => switchConversation(conv.id, conv.name || 'DM', 'dm');
-    list.appendChild(item);
-  });
-}
+            for(let d=1; d<=daysInMonth; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'cal-cell';
+                if(d === 17 && viewM === 3) cell.classList.add('today');
+                
+                const dateKey = `${viewY}-${(viewM+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+                if(bookingData[currentCanyon]?.[dateKey]) cell.classList.add('has-data');
+                
+                cell.textContent = d;
+                cell.onclick = () => showDay(dateKey, d);
+                grid.appendChild(cell);
+            }
+        }
 
-async function switchConversation(id, name, type) {
-  currentConversationId = id;
-  document.getElementById('chat-name').textContent = name;
-  document.getElementById('chat-type-badge').textContent = type;
+        function changeMonth(dir) {
+            viewM += dir;
+            if(viewM > 11) { viewM = 0; viewY++; }
+            if(viewM < 0) { viewM = 11; viewY--; }
+            renderCalendar();
+        }
 
-  // Update active states
-  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('conv-' + id) || document.getElementById('team-chat-item');
-  if (el) el.classList.add('active');
-  if (id === 'eb7d79df-f157-4201-9c67-e621bdfa984e') document.getElementById('team-chat-item').classList.add('active');
+        function showDay(key, day) {
+            const details = document.getElementById('cal-details');
+            const trips = bookingData[currentCanyon]?.[key] || [];
+            
+            if(trips.length === 0) {
+                details.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text3)">No trips on ${day} ${document.getElementById('cal-month-title').textContent}</p>`;
+                return;
+            }
 
-  await loadMessages();
-  subscribeToMessages();
-}
+            details.innerHTML = `
+                <h3 style="font-size:14px; margin-bottom:12px;">Trips for ${day} ${document.getElementById('cal-month-title').textContent}</h3>
+                ${trips.map(t => `
+                    <div class="booking-card">
+                        <div class="time-badge">${formatTime(t)}</div>
+                        <div style="font-weight:700; margin-top:10px;">${currentCanyon}</div>
+                    </div>
+                `).join('')}
+            `;
+        }
 
-// ========================= MESSAGES =========================
-async function loadMessages() {
-  const container = document.getElementById('messages');
-  container.innerHTML = '<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Loading…</span></div>';
+        // --- SETTINGS ---
+        function setTheme(mode, btn) {
+            document.body.classList.toggle('dark', mode === 'dark');
+            toggleSeg(btn);
+        }
 
-  const { data, error } = await db
-    .from('messages')
-    .select('id, content, sender_id, created_at')
-    .eq('conversation_id', currentConversationId)
-    .order('created_at', { ascending: true });
+        function setFS(size, btn) {
+            document.documentElement.style.setProperty('--fs', size);
+            toggleSeg(btn);
+        }
 
-  container.innerHTML = '';
+        function toggleSeg(btn) {
+            btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
 
-  if (error) {
-    container.innerHTML = `<p style="color:#f87171;padding:20px;font-size:13px">Error loading messages: ${error.message}</p>`;
-    return;
-  }
-  if (!data || data.length === 0) {
-    container.innerHTML = `<p style="color:#444;padding:20px;font-size:13px;text-align:center">No messages yet — say hello! 👋</p>`;
-    return;
-  }
-
-  data.forEach(msg => renderMessage(msg));
-  container.scrollTop = container.scrollHeight;
-}
-
-function renderMessage(msg) {
-  const container = document.getElementById('messages');
-  const isMine = msg.sender_id === currentUser.id;
-  const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText = `display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'}`;
-  wrapper.id = 'msg-' + msg.id;
-
-  const senderLabel = !isMine ? `<p style="font-size:11px;color:#555;margin-bottom:4px;padding-left:4px">${getDisplayName(msg.sender_id)}</p>` : '';
-
-  wrapper.innerHTML = `${senderLabel}
-    <div class="bubble ${isMine ? 'mine' : 'theirs'}">
-      <p style="margin:0">${escapeHtml(msg.content)}</p>
-      <p class="ts">${time}</p>
-    </div>`;
-  container.appendChild(wrapper);
-}
-
-function getDisplayName(uid) {
-  return userProfiles[uid] || uid.substring(0,8) + '…';
-}
-
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-async function sendMessage() {
-  const input = document.getElementById('message-input');
-  const content = input.value.trim();
-  if (!content || !currentConversationId) return;
-  input.value = '';
-
-  const { error } = await db.from('messages').insert({
-    conversation_id: currentConversationId,
-    sender_id: currentUser.id,
-    content
-  });
-
-  if (error) {
-    console.error('Send error:', error);
-    input.value = content; // restore on error
-  }
-}
-
-// ========================= REALTIME =========================
-function subscribeToMessages() {
-  if (currentChannel) db.removeChannel(currentChannel);
-
-  currentChannel = db
-    .channel('room-' + currentConversationId)
-    .on('postgres_changes', {
-      event: 'INSERT', schema: 'public', table: 'messages',
-      filter: `conversation_id=eq.${currentConversationId}`
-    }, (payload) => {
-      // Avoid duplicate if we already rendered optimistically
-      if (document.getElementById('msg-' + payload.new.id)) return;
-      renderMessage(payload.new);
-      document.getElementById('messages').scrollTop = 999999;
-    })
-    .subscribe();
-}
-
-// ========================= DM CREATION =========================
-function openNewDM() {
-  document.getElementById('dm-modal').style.display = 'flex';
-  document.getElementById('dm-email').value = '';
-  document.getElementById('dm-error').textContent = '';
-}
-function closeDMModal() {
-  document.getElementById('dm-modal').style.display = 'none';
-}
-
-async function createDM() {
-  const email = document.getElementById('dm-email').value.trim();
-  document.getElementById('dm-error').textContent = '';
-  if (!email) { document.getElementById('dm-error').textContent = 'Please enter an email.'; return; }
-
-  // Look up the user via profiles table (requires a profiles table with email exposed, or use a stored function)
-  // Fallback: search by email in profiles if available
-  const { data: profiles, error: profErr } = await db
-    .from('profiles')
-    .select('id, email, full_name')
-    .eq('email', email)
-    .limit(1);
-
-  let targetId = null;
-  if (profiles && profiles.length > 0) {
-    targetId = profiles[0].id;
-  }
-
-  if (!targetId) {
-    // Try auth.users lookup via RPC if available
-    const { data: rpcData } = await db.rpc('get_user_id_by_email', { email_input: email });
-    if (rpcData) targetId = rpcData;
-  }
-
-  if (!targetId) {
-    document.getElementById('dm-error').textContent = 'User not found. Make sure they have an account.';
-    return;
-  }
-
-  // Check for existing DM between these two users
-  const { data: existing } = await db
-    .from('conversations')
-    .select('id, name, conversation_participants!inner(user_id)')
-    .eq('type', 'dm')
-    .eq('conversation_participants.user_id', currentUser.id);
-
-  let existingDM = null;
-  if (existing) {
-    for (const conv of existing) {
-      const { data: parts } = await db
-        .from('conversation_participants')
-        .select('user_id')
-        .eq('conversation_id', conv.id);
-      if (parts && parts.length === 2 && parts.some(p => p.user_id === targetId)) {
-        existingDM = conv;
-        break;
-      }
-    }
-  }
-
-  if (existingDM) {
-    closeDMModal();
-    switchConversation(existingDM.id, existingDM.name || email, 'dm');
-    return;
-  }
-
-  // Create new DM conversation
-  const { data: newConv, error: convErr } = await db
-    .from('conversations')
-    .insert({ type: 'dm', name: email })
-    .select()
-    .single();
-
-  if (convErr) { document.getElementById('dm-error').textContent = convErr.message; return; }
-
-  await db.from('conversation_participants').insert([
-    { conversation_id: newConv.id, user_id: currentUser.id },
-    { conversation_id: newConv.id, user_id: targetId }
-  ]);
-
-  closeDMModal();
-  await loadDMList();
-  switchConversation(newConv.id, email, 'dm');
-}
-
-// ========================= INIT =========================
-db.auth.getSession().then(({ data: { session } }) => {
-  if (session) { currentUser = session.user; boot(); }
-});
-
-db.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session && !currentUser) {
-    currentUser = session.user;
-    boot();
-  }
-});
-</script>
+        window.onload = syncData;
+    </script>
 </body>
 </html>
