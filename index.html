@@ -29,72 +29,136 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .screen.active{display:flex}
-
 /* Loading */
 .loading-wrap{flex:1;display:flex;align-items:center;justify-content:center}
 .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
+.spinning{animation:spin 1s linear infinite}
+/* Login */
+.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:20px;overflow-y:auto}
+.login-icon{width:72px;height:72px;border-radius:18px;overflow:hidden;background:var(--accent-bg);display:flex;align-items:center;justify-content:center}
+.login-icon img{width:100%;height:100%;object-fit:cover}
+.login-title{font-size:24px;font-weight:700;color:var(--text);text-align:center}
+.login-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.5;max-width:260px}
+.google-btn{display:flex;align-items:center;gap:10px;padding:13px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;width:100%;max-width:280px;justify-content:center}
+.google-btn:hover{background:var(--surface2)}
+.google-btn svg{width:20px;height:20px;flex-shrink:0}
+.login-note{font-size:11px;color:var(--text3);text-align:center}
+/* Onboarding */
+.onboard-wrap{flex:1;display:flex;flex-direction:column;overflow-y:auto;padding:20px}
+.onboard-step{display:none;flex-direction:column;gap:16px}
+.onboard-step.active{display:flex}
+.onboard-title{font-size:22px;font-weight:700;color:var(--text)}
+.onboard-sub{font-size:14px;color:var(--text2);line-height:1.5}
+.role-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .15s}
+.role-card:hover,.role-card.selected{border-color:var(--accent);background:var(--accent-bg)}
+.role-card-title{font-size:16px;font-weight:600;color:var(--text)}
+.role-card-sub{font-size:13px;color:var(--text2);margin-top:4px}
+.onboard-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:15px;font-family:var(--font);outline:none}
+.onboard-input:focus{border-color:var(--accent)}
+.org-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--accent-bg);border:1px solid var(--accent-light);border-radius:20px;font-size:13px;color:var(--accent);font-weight:500}
+.org-tag button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:16px;line-height:1;padding:0}
+.org-list{display:flex;flex-wrap:wrap;gap:8px;min-height:32px}
+.org-suggestion{padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:14px;color:var(--text)}
+.org-suggestion:hover{background:var(--surface2)}
+.btn-primary{width:100%;padding:14px;border-radius:12px;background:var(--accent);color:white;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:var(--font)}
+.btn-primary:hover{opacity:.9}
+.btn-secondary{width:100%;padding:14px;border-radius:12px;background:var(--surface);color:var(--text);font-size:15px;font-weight:500;border:1px solid var(--border);cursor:pointer;font-family:var(--font)}
+.owner-field{display:flex;flex-direction:column;gap:6px}
+.owner-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
 /* Top bar */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:52px 16px 12px;background:var(--bg);flex-shrink:0}
 .topbar-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px}
 .topbar-actions{display:flex;align-items:center;gap:8px}
 .icon-btn{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.icon-btn svg{width:17px;height:17px;color:var(--text2)}
 .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
-
+.avatar-ph{width:32px;height:32px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--accent)}
+/* Updated banner */
+.updated-bar{padding:6px 16px;font-size:11px;color:var(--text3);flex-shrink:0;display:flex;align-items:center;gap:6px}
+.updated-dot{width:6px;height:6px;border-radius:50%;background:#4caf50;flex-shrink:0}
+.updated-dot.stale{background:#ff9800}
 /* Filters */
 .filters{display:flex;gap:8px;padding:0 16px 10px;flex-shrink:0}
+.filter-wrap{position:relative;flex:1}
 .filter-btn{display:flex;align-items:center;gap:6px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;width:100%}
-.filter-btn svg{width:14px;height:14px;color:var(--accent)}
-.ch{margin-left:auto;width:12px;height:12px;color:var(--text3)}
+.filter-btn svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
+.filter-btn .ch{margin-left:auto;width:12px;height:12px;color:var(--text3);flex-shrink:0}
 .filter-dd{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;overflow:hidden;display:none;max-height:240px;overflow-y:auto}
 .filter-dd.open{display:block}
-.filter-opt{padding:12px 14px;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.filter-opt{padding:12px 14px;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.filter-opt:last-child{border-bottom:none}
 .filter-opt.sel{color:var(--accent)}
 .filter-opt.sel::after{content:'✓';color:var(--accent);font-weight:700}
-
-/* Messages - iMessage style */
-.msg-topbar{display:flex;align-items:center;justify-content:space-between;padding:52px 16px 8px;background:var(--bg)}
-.msg-search{padding:8px 16px}
-.msg-search-input{width:100%;padding:10px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;font-size:15px;outline:none}
-.conversations-list{flex:1;overflow-y:auto;padding:0 16px}
-.conversation-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer}
-.conv-avatar{width:52px;height:52px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.conv-info{flex:1;min-width:0}
-.conv-name{font-size:17px;font-weight:600;color:var(--text)}
-.conv-last{font-size:14px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-screen{display:none;flex:1;flex-direction:column}
-.chat-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
-.chat-back{font-size:28px;cursor:pointer;padding:0 8px}
-.chat-title{font-size:17px;font-weight:600}
-.msg-bubbles{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-.msg-bubble{max-width:78%;padding:11px 15px;border-radius:18px;font-size:15px;line-height:1.45}
+.filter-opt:hover{background:var(--surface2)}
+.hdiv{height:1px;background:var(--border);flex-shrink:0}
+.summary-bar{padding:8px 16px;font-size:12px;color:var(--text3);flex-shrink:0}
+/* Booking list */
+.bookings-scroll{flex:1;overflow-y:auto;padding:8px 16px 16px;min-height:0}
+.booking-card{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:8px;border:1px solid var(--border)}
+.booking-badges{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-time{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-light)}
+.badge svg{width:11px;height:11px}
+.booking-co{font-size:15px;font-weight:700;color:var(--text)}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;gap:10px}
+.empty-icon{width:56px;height:56px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.empty-icon svg{width:26px;height:26px;color:var(--text3)}
+.empty-title{font-size:16px;font-weight:700;color:var(--text)}
+.empty-sub{font-size:13px;color:var(--text3);text-align:center}
+/* Calendar */
+.cal-pad{padding:10px 16px;flex-shrink:0}
+.cal-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:14px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-nav-btn{width:30px;height:30px;border-radius:8px;background:none;border:none;cursor:pointer;color:var(--text);font-size:17px;display:flex;align-items:center;justify-content:center}
+.cal-nav-btn:hover{background:var(--surface2)}
+.cal-month{font-size:15px;font-weight:700;color:var(--text)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.cal-dow{text-align:center;font-size:10px;font-weight:500;color:var(--text3);padding:3px 0}
+.cal-day{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text)}
+.cal-day:hover{background:var(--surface2)}
+.cal-day.today{background:var(--accent);color:white}
+.cal-day.selected:not(.today){background:var(--accent-bg);color:var(--accent)}
+.cal-day .dot{width:4px;height:4px;border-radius:50%;background:var(--accent);position:absolute;bottom:2px}
+.cal-day.today .dot{background:white}
+.cal-day.empty{cursor:default}
+.cal-info{padding:10px 16px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.cal-date-label{font-size:15px;font-weight:700;color:var(--text)}
+.cal-count{font-size:12px;color:var(--text3)}
+.cal-list{flex:1;overflow-y:auto;padding:0 16px 16px;min-height:0}
+/* Messages */
+.msg-list{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.msg-bubble{max-width:78%;padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.4}
 .msg-bubble.mine{background:var(--accent);color:white;align-self:flex-end;border-bottom-right-radius:4px}
 .msg-bubble.theirs{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
-.msg-input-bar{display:flex;gap:8px;padding:10px 14px;background:var(--surface);border-top:1px solid var(--border)}
-.msg-input{flex:1;padding:11px 18px;border-radius:22px;border:1px solid var(--border);background:var(--surface2);font-size:15px;outline:none}
-
-/* Calendar Canyon Selector */
-.cal-canyon-selector{padding:0 16px 8px}
-
+.msg-name{font-size:10px;color:var(--text3);margin-bottom:2px}
+.msg-time{font-size:9px;opacity:.7;margin-top:2px;text-align:right}
+.msg-bar{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.msg-input{flex:1;padding:9px 13px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;font-family:var(--font);outline:none}
+.msg-send{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.msg-send svg{width:15px;height:15px;color:white}
 /* Settings */
 .settings-scroll{flex:1;overflow-y:auto;padding:0 16px 24px;min-height:0}
 .sec-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin:16px 0 6px}
 .settings-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:8px}
 .sub-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;padding:12px 14px 6px}
-.seg{display:flex;gap:3px;padding:0 8px 10px;background:var(--surface2);margin:0 8px 10px;border-radius:9px}
-.seg-btn{flex:1;padding:7px;border-radius:7px;border:none;background:none;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer}
-.seg-btn.active{background:var(--surface);color:var(--accent);font-weight:700}
+.seg{display:flex;gap:3px;padding:0 8px 10px}
+.seg-btn{flex:1;padding:7px;border-radius:7px;border:none;background:none;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
+.seg-btn.active{background:var(--surface);color:var(--accent);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 .set-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--border)}
 .set-icon{width:32px;height:32px;border-radius:9px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.set-icon svg{width:16px;height:16px;color:var(--accent)}
 .set-info{flex:1}
 .set-label{font-size:14px;font-weight:600;color:var(--text)}
 .set-desc{font-size:11px;color:var(--text3);margin-top:1px}
-.signout-btn{width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
-
+.prof-row{display:flex;align-items:center;gap:12px;padding:14px}
+.prof-name{font-size:14px;font-weight:600;color:var(--text)}
+.prof-email{font-size:11px;color:var(--text3);margin-top:1px}
+.signout-btn{width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:4px}
+.ver{text-align:center;font-size:12px;color:var(--text3);padding:16px}
 /* Bottom nav */
 .bottom-nav{display:flex;background:var(--nav);border-top:1px solid var(--border);padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:none;background:none;cursor:pointer;font-size:10px;font-weight:500;color:var(--text3)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:none;background:none;cursor:pointer;font-size:10px;font-weight:500;color:var(--text3);font-family:var(--font)}
 .nav-btn.active{color:var(--accent)}
 .nav-btn svg{width:20px;height:20px}
 </style>
@@ -102,12 +166,10 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 <body>
 <div class="app" id="app">
 
-  <!-- LOADING -->
   <div class="screen active" id="loadingScreen">
     <div class="loading-wrap"><div class="spinner"></div></div>
   </div>
 
-  <!-- LOGIN -->
   <div class="screen" id="loginScreen">
     <div class="login-wrap">
       <div class="login-icon"><img src="icon512.png" alt="Canyon" onerror="this.parentElement.innerHTML='🏔️'"></div>
@@ -121,25 +183,68 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
     </div>
   </div>
 
-  <!-- ONBOARDING (your original) -->
   <div class="screen" id="onboardScreen">
     <div class="topbar" style="padding-top:52px">
       <div class="topbar-title">Welcome!</div>
       <div id="onboardStep" style="font-size:12px;color:var(--text3)">Step 1 of 3</div>
     </div>
+    <div class="hdiv"></div>
     <div class="onboard-wrap">
-      <!-- Paste your full original onboarding HTML here if needed. For now it's placeholder. -->
       <div class="onboard-step active" id="step1">
         <div class="onboard-title">What's your role?</div>
-        <button class="btn-primary" onclick="nextStep()" id="step1Next" disabled>Continue</button>
+        <div class="onboard-sub">This helps us set up the right experience for you.</div>
+        <div class="role-card" id="roleGuide" onclick="selectRole('guide')">
+          <div class="role-card-title">🧗 Guide</div>
+          <div class="role-card-sub">I lead canyon trips and work for one or more companies</div>
+        </div>
+        <div class="role-card" id="roleOwner" onclick="selectRole('owner')">
+          <div class="role-card-title">🏢 Business Owner</div>
+          <div class="role-card-sub">I run a canyoning company and manage bookings</div>
+        </div>
+        <button class="btn-primary" onclick="nextStep()" id="step1Next" disabled style="opacity:.4">Continue</button>
+      </div>
+      <div class="onboard-step" id="step2Guide">
+        <div class="onboard-title">Who do you work for?</div>
+        <div class="onboard-sub">You can add multiple organisations.</div>
+        <div class="org-list" id="selectedOrgs"></div>
+        <input class="onboard-input" id="orgSearch" placeholder="Search or type organisation name..." oninput="searchOrgs()" onkeydown="if(event.key==='Enter')addOrgFromInput()"/>
+        <div id="orgSuggestions"></div>
+        <button class="btn-primary" onclick="nextStep()">Continue</button>
+      </div>
+      <div class="onboard-step" id="step2Owner">
+        <div class="onboard-title">Tell us about your business</div>
+        <div class="onboard-sub">This helps set up your organisation on the platform.</div>
+        <div class="owner-field">
+          <div class="owner-label">Business Name</div>
+          <input class="onboard-input" id="bizName" placeholder="e.g. Blue Mountains Adventures"/>
+        </div>
+        <div class="owner-field">
+          <div class="owner-label">Business Email</div>
+          <input class="onboard-input" id="bizEmail" type="email" placeholder="info@yourbusiness.com.au"/>
+        </div>
+        <div class="owner-field">
+          <div class="owner-label">Phone Number</div>
+          <input class="onboard-input" id="bizPhone" type="tel" placeholder="+61 4XX XXX XXX"/>
+        </div>
+        <div class="owner-field">
+          <div class="owner-label">Which canyons do you operate in?</div>
+          <input class="onboard-input" id="bizCanyons" placeholder="e.g. Empress, Claustral, Grand Canyon"/>
+        </div>
+        <button class="btn-primary" onclick="submitOwner()">Submit for Review</button>
+      </div>
+      <div class="onboard-step" id="step3">
+        <div style="text-align:center;padding:20px 0">
+          <div style="font-size:48px;margin-bottom:16px">🎉</div>
+          <div class="onboard-title" style="text-align:center">You're all set!</div>
+          <div class="onboard-sub" style="text-align:center;margin-top:8px">Welcome to Canyon Bookings. Let's get started.</div>
+        </div>
+        <button class="btn-primary" onclick="finishOnboarding()">Go to App</button>
       </div>
     </div>
   </div>
 
-  <!-- MAIN APP -->
   <div class="screen" id="appScreen">
 
-    <!-- HOME TAB -->
     <div class="screen active" id="homeTab">
       <div class="topbar">
         <div class="topbar-title">Canyon Bookings</div>
@@ -150,11 +255,15 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
           <div id="userAvatarEl"></div>
         </div>
       </div>
+      <div class="updated-bar" id="updatedBar" style="display:none">
+        <div class="updated-dot" id="updatedDot"></div>
+        <span id="updatedText"></span>
+      </div>
       <div class="filters">
         <div class="filter-wrap">
           <button class="filter-btn" onclick="toggleDd('canyonDd')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span id="canyonLabel" style="flex:1;text-align:left">Empress</span>
+            <span id="canyonLabel" style="flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Empress</span>
             <svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="filter-dd" id="canyonDd"></div>
@@ -168,22 +277,20 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
           <div class="filter-dd" id="dateDd"></div>
         </div>
       </div>
+      <div class="hdiv"></div>
       <div class="summary-bar" id="homeSummary">Loading...</div>
+      <div class="hdiv"></div>
       <div class="bookings-scroll" id="homeList"></div>
     </div>
 
-    <!-- CALENDAR TAB -->
     <div class="screen" id="calTab">
       <div class="topbar">
-        <div class="topbar-title">Calendar</div>
+        <div>
+          <div class="topbar-title">Calendar</div>
+          <div style="font-size:12px;color:var(--text2)" id="calSub">Empress</div>
+        </div>
       </div>
-      <div class="cal-canyon-selector">
-        <button class="filter-btn" onclick="toggleCalCanyonDd()" style="width:100%">
-          <span id="calCanyonLabel">Empress</span>
-          <svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="filter-dd" id="calCanyonDd"></div>
-      </div>
+      <div class="hdiv"></div>
       <div class="cal-pad">
         <div class="cal-card">
           <div class="cal-nav">
@@ -198,38 +305,27 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
         <div class="cal-date-label" id="calDateLabel"></div>
         <div class="cal-count" id="calCount"></div>
       </div>
+      <div class="hdiv"></div>
       <div class="cal-list" id="calList"></div>
     </div>
 
-    <!-- MESSAGES TAB -->
     <div class="screen" id="msgTab">
-      <div class="msg-topbar">
+      <div class="topbar">
         <div class="topbar-title">Messages</div>
-        <button class="icon-btn" onclick="showNewMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>
+      </div>
+      <div class="hdiv"></div>
+      <div class="msg-list" id="msgList"></div>
+      <div class="msg-bar">
+        <input class="msg-input" id="msgInput" placeholder="Message your team..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+        <button class="msg-send" onclick="sendMsg()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
-      </div>
-      <div class="msg-search">
-        <input id="msgSearchInput" class="msg-search-input" placeholder="Search" onkeyup="filterConversations()">
-      </div>
-      <div class="conversations-list" id="conversationsList"></div>
-
-      <div class="chat-screen" id="chatScreen">
-        <div class="chat-header">
-          <div class="chat-back" onclick="closeChat()">←</div>
-          <div class="chat-title" id="chatTitle">General</div>
-        </div>
-        <div class="msg-bubbles" id="msgBubbles"></div>
-        <div class="msg-input-bar">
-          <input id="chatInput" class="msg-input" placeholder="Message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-          <button onclick="sendChatMessage()" style="background:var(--accent);color:white;border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center">↑</button>
-        </div>
       </div>
     </div>
 
-    <!-- SETTINGS TAB -->
     <div class="screen" id="settingsTab">
       <div class="topbar"><div class="topbar-title">Settings</div></div>
+      <div class="hdiv"></div>
       <div class="settings-scroll">
         <div class="sec-label">Account</div>
         <div class="settings-card">
@@ -242,26 +338,24 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
           </div>
         </div>
         <button class="signout-btn" onclick="signOut()">Sign Out</button>
-
         <div class="sec-label">Appearance</div>
         <div class="settings-card">
           <div class="sub-label">THEME</div>
-          <div class="seg">
+          <div class="seg" style="background:var(--surface2);margin:0 8px 10px;border-radius:9px;padding:3px">
             <button class="seg-btn active" id="thL" onclick="setTheme('light',this)">Light</button>
             <button class="seg-btn" id="thD" onclick="setTheme('dark',this)">Dark</button>
             <button class="seg-btn" id="thS" onclick="setTheme('system',this)">System</button>
           </div>
           <div class="sub-label" style="border-top:1px solid var(--border)">TEXT SIZE</div>
-          <div class="seg">
+          <div class="seg" style="background:var(--surface2);margin:0 8px 10px;border-radius:9px;padding:3px">
             <button class="seg-btn" onclick="setFs('13px',this)">Small</button>
             <button class="seg-btn active" onclick="setFs('15px',this)">Medium</button>
             <button class="seg-btn" onclick="setFs('17px',this)">Large</button>
           </div>
         </div>
-
         <div class="sec-label">Data</div>
         <div class="settings-card">
-          <div class="set-row">
+          <div class="set-row" style="border-top:none">
             <div class="set-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
             <div class="set-info">
               <div class="set-label">Last updated</div>
@@ -275,12 +369,22 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
               <div class="set-desc" id="settingsCanyons">—</div>
             </div>
           </div>
+          <div class="set-row">
+            <div class="set-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+            <div class="set-info"><div class="set-label">Data source</div><div class="set-desc">mryike.github.io/canyon-tracker</div></div>
+          </div>
+        </div>
+        <div class="sec-label">About</div>
+        <div class="settings-card">
+          <div class="set-row" style="border-top:none">
+            <div class="set-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="set-info"><div class="set-label">Canyon Bookings</div><div class="set-desc">Version 1.1.0</div></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- BOTTOM NAV -->
-    <div class="bottom-nav">
+    <div class="bottom-nav" id="bottomNav">
       <button class="nav-btn active" onclick="showTab('home',this)">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         Home
@@ -303,181 +407,302 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 
 <script>
 const {createClient} = supabase;
-const sb = createClient('https://akgftmrraboplxpeugvi.supabase.co', 'sb_publishable_aobHSo8qxS8sM85c5qO1Tw_R2-8NyO7');
+const sb = createClient(
+  'https://akgftmrraboplxpeugvi.supabase.co',
+  'sb_publishable_aobHSo8qxS8sM85c5qO1Tw_R2-8NyO7'
+);
 const DATA_URL = 'https://mryike.github.io/canyon-tracker/data.json';
+
+// Canyon.py saves exactly these 3 names — order matches preferred display order
 const CANYON_ORDER = ['Empress', 'Grand Canyon', 'Narrow Neck'];
 
-let user = null;
-let allData = {};
+let user = null, profile = null;
+let allData = {};         // { "Empress": { "2026-04-16": { sold: [...] } } }
+let dataUpdated = '';     // "2026-04-16 06:00" from Canyon.py
 let canyon = 'Empress';
-let conversations = [];
-let currentChatId = null;
+let dateStr = '';
+let dateList = [];
+let calY = new Date().getFullYear(), calM = new Date().getMonth(), calSel = '';
+let selectedRole = '', selectedOrgs = [], msgChannel = null;
 
-const GROUP_CHATS = [
-  {id: "group:General", name: "General", type: "group", icon: "👥"},
-  {id: "group:Empress", name: "Empress", type: "group", icon: "🏔️"},
-  {id: "group:Grand", name: "Grand", type: "group", icon: "🏔️"},
-  {id: "group:NarrowNeck", name: "Narrow Neck", type: "group", icon: "🏔️"}
-];
+// ── Helpers ────────────────────────────────────────────────────────────
+const todayStr = () => new Date().toISOString().slice(0, 10);
 
-// Text Size
-function setFs(size, btn) {
-  document.documentElement.style.setProperty('--fs', size);
-  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  localStorage.setItem('fs', size);
+const parseTime = iso => {
+  try { return new Date(iso).toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true}); }
+  catch { return iso; }
+};
+
+function fmtFull(s) {
+  const d = new Date(s + 'T12:00:00'), t = todayStr();
+  const tom = new Date(); tom.setDate(tom.getDate() + 1);
+  if (s === t) return 'Today';
+  if (s === tom.toISOString().slice(0, 10)) return 'Tomorrow';
+  return d.toLocaleDateString('en-AU', {weekday:'long', month:'long', day:'numeric'});
 }
 
-// Canyon helpers
+function getDateListForCanyon(c) {
+  return Object.keys(allData[c] || {}).sort();
+}
+
+// ── Canyon dropdown ────────────────────────────────────────────────────
 function populateCanyons() {
   const dd = document.getElementById('canyonDd');
+  // Use Canyon.py's actual keys, sorted by preferred order
   const canyons = Object.keys(allData).sort((a, b) => {
     const ia = CANYON_ORDER.indexOf(a), ib = CANYON_ORDER.indexOf(b);
     if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
     return ia - ib;
   });
-  dd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c}')">${c}</div>`).join('');
+  dd.innerHTML = canyons.map(c =>
+    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
+  ).join('');
+
+  // Update settings page canyon list
+  document.getElementById('settingsCanyons').textContent = canyons.join(', ');
 }
 
-function populateCalCanyonDd() {
-  const dd = document.getElementById('calCanyonDd');
-  const canyons = Object.keys(allData).sort((a, b) => {
-    const ia = CANYON_ORDER.indexOf(a), ib = CANYON_ORDER.indexOf(b);
-    if (ia === -1 && ib === -1) return a.localeCompare(b);
-    return ia - ib;
-  });
-  dd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="switchCalCanyon('${c}')">${c}</div>`).join('');
+// ── Updated banner ─────────────────────────────────────────────────────
+function showUpdatedBar(updatedStr) {
+  if (!updatedStr) return;
+  dataUpdated = updatedStr;
+  // Parse "2026-04-16 06:00" into a Date
+  const parts = updatedStr.match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/);
+  let label = updatedStr;
+  let stale = false;
+  if (parts) {
+    const dt = new Date(parts[1] + 'T' + parts[2] + ':00');
+    const diffMins = (Date.now() - dt.getTime()) / 60000;
+    if (diffMins < 90) {
+      label = `Updated ${Math.round(diffMins)}m ago`;
+    } else {
+      label = `Updated ${dt.toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true})} ${dt.toLocaleDateString('en-AU', {day:'numeric', month:'short'})}`;
+      stale = diffMins > 120; // orange dot if >2hrs old
+    }
+  }
+  document.getElementById('updatedText').textContent = label;
+  document.getElementById('updatedDot').className = 'updated-dot' + (stale ? ' stale' : '');
+  document.getElementById('updatedBar').style.display = 'flex';
+  document.getElementById('settingsUpdated').textContent = updatedStr;
 }
 
-function toggleCalCanyonDd() {
-  document.getElementById('calCanyonDd').classList.toggle('open');
+// ── Screens ────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.app>.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-function switchCalCanyon(name) {
-  canyon = name;
-  document.getElementById('calCanyonLabel').textContent = name;
-  document.getElementById('calCanyonDd').classList.remove('open');
-  renderCal();
+function showTab(name, btn) {
+  document.querySelectorAll('#appScreen>.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name + 'Tab').classList.add('active');
+  btn.classList.add('active');
+  if (name === 'cal') renderCal();
+  if (name === 'msg') scrollMsgs();
 }
 
-function selCanyon(name) {
-  canyon = name;
-  document.getElementById('canyonLabel').textContent = name;
-  document.getElementById('calCanyonLabel').textContent = name;
-  document.getElementById('canyonDd').classList.remove('open');
+// ── Auth ───────────────────────────────────────────────────────────────
+async function signInGoogle() {
+  await sb.auth.signInWithOAuth({provider:'google', options:{redirectTo:window.location.origin}});
+}
+
+async function signOut() {
+  if (msgChannel) sb.removeChannel(msgChannel);
+  await sb.auth.signOut();
+  user = null; profile = null;
+  showScreen('loginScreen');
+}
+
+// ── Onboarding ─────────────────────────────────────────────────────────
+let currentStep = 1;
+
+function selectRole(r) {
+  selectedRole = r;
+  document.getElementById('roleGuide').classList.toggle('selected', r === 'guide');
+  document.getElementById('roleOwner').classList.toggle('selected', r === 'owner');
+  const nextBtn = document.getElementById('step1Next');
+  nextBtn.disabled = false;
+  nextBtn.style.opacity = 1;
+}
+
+function nextStep() {
+  document.querySelectorAll('.onboard-step').forEach(el => el.classList.remove('active'));
+  if (currentStep === 1) {
+    currentStep = 2;
+    document.getElementById(selectedRole === 'guide' ? 'step2Guide' : 'step2Owner').classList.add('active');
+    document.getElementById('onboardStep').textContent = 'Step 2 of 3';
+  } else if (currentStep === 2) {
+    currentStep = 3;
+    document.getElementById('step3').classList.add('active');
+    document.getElementById('onboardStep').textContent = 'Step 3 of 3';
+  }
+}
+
+function searchOrgs() { /* Mock function */ }
+function addOrgFromInput() { /* Mock function */ }
+function submitOwner() { nextStep(); }
+
+function finishOnboarding() {
+  showScreen('appScreen');
+  loadData();
+}
+
+// ── App Functions ──────────────────────────────────────────────────────
+function toggleDd(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.filter-dd').forEach(d => d.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+function selCanyon(c, el) {
+  canyon = c;
+  document.getElementById('canyonLabel').textContent = c;
+  document.getElementById('calSub').textContent = c;
+  document.querySelectorAll('.filter-dd').forEach(d => d.classList.remove('open'));
+  
+  dateList = getDateListForCanyon(canyon);
+  if (!dateList.includes(dateStr)) dateStr = dateList[0] || todayStr();
+  
+  populateDates();
   renderHome();
   renderCal();
+  populateCanyons();
 }
 
-// Messages
-function renderConversations(filtered = null) {
-  const container = document.getElementById('conversationsList');
-  const list = filtered || conversations;
-  container.innerHTML = list.map(conv => `
-    <div class="conversation-item" onclick="openChat('${conv.id}')">
-      <div class="conv-avatar">${conv.icon}</div>
-      <div class="conv-info">
-        <div class="conv-name">${conv.name}</div>
-        <div class="conv-last">Tap to open chat</div>
-      </div>
+function selDate(d) {
+  dateStr = d;
+  document.getElementById('dateLabel').textContent = fmtFull(d);
+  document.querySelectorAll('.filter-dd').forEach(el => el.classList.remove('open'));
+  renderHome();
+}
+
+function populateDates() {
+  const dd = document.getElementById('dateDd');
+  dd.innerHTML = dateList.map(d => 
+    `<div class="filter-opt${d === dateStr ? ' sel' : ''}" onclick="selDate('${d}')">${fmtFull(d)}</div>`
+  ).join('');
+  if (dateList.includes(dateStr)) document.getElementById('dateLabel').textContent = fmtFull(dateStr);
+}
+
+function renderHome() {
+  const list = document.getElementById('homeList');
+  const day = (allData[canyon] || {})[dateStr];
+  if (!day || !day.sold || day.sold.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div><div class="empty-title">No Bookings</div><div class="empty-sub">No one is booked for ${canyon} on this date.</div></div>`;
+    document.getElementById('homeSummary').textContent = '0 bookings';
+    return;
+  }
+  document.getElementById('homeSummary').textContent = `${day.sold.length} booking${day.sold.length === 1 ? '' : 's'}`;
+  list.innerHTML = day.sold.map(b => `
+    <div class="booking-card">
+      <div class="booking-badges"><div class="badge badge-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${b.time || 'TBC'}</div></div>
+      <div class="booking-co">${b.company}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:4px">Pax: ${b.pax}</div>
     </div>
   `).join('');
 }
 
-function filterConversations() {
-  const term = document.getElementById('msgSearchInput').value.toLowerCase().trim();
-  if (!term) return renderConversations();
-  const filtered = conversations.filter(c => c.name.toLowerCase().includes(term));
-  renderConversations(filtered);
+function renderCal() {
+  const grid = document.getElementById('calGrid');
+  const monthLabel = document.getElementById('calMonth');
+  const first = new Date(calY, calM, 1);
+  monthLabel.textContent = first.toLocaleString('default', { month: 'long', year: 'numeric' });
+  
+  const daysInMonth = new Date(calY, calM + 1, 0).getDate();
+  const startDay = (first.getDay() + 6) % 7; 
+  
+  let html = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  for (let i = 0; i < startDay; i++) html += `<div class="cal-day empty"></div>`;
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const curDate = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = curDate === todayStr();
+    const isSel = curDate === calSel;
+    const hasData = (allData[canyon] || {})[curDate]?.sold?.length > 0;
+    html += `<div class="cal-day${isToday?' today':''}${isSel?' selected':''}" onclick="selCalDay('${curDate}')">${d}${hasData?'<div class="dot"></div>':''}</div>`;
+  }
+  grid.innerHTML = html;
+  if (!calSel) selCalDay(todayStr());
+  else renderCalList();
 }
 
-function openChat(chatId) {
-  currentChatId = chatId;
-  const conv = conversations.find(c => c.id === chatId) || {name: "Chat"};
-  document.getElementById('chatTitle').textContent = conv.name;
-  document.getElementById('conversationsList').style.display = 'none';
-  document.getElementById('chatScreen').style.display = 'flex';
-  document.getElementById('msgBubbles').innerHTML = `<div style="padding:60px 20px;text-align:center;color:var(--text3)">Conversation with ${conv.name} started.</div>`;
+function selCalDay(d) {
+  calSel = d;
+  document.getElementById('calDateLabel').textContent = fmtFull(d);
+  renderCal();
 }
 
-function closeChat() {
-  document.getElementById('chatScreen').style.display = 'none';
-  document.getElementById('conversationsList').style.display = 'block';
+function renderCalList() {
+  const list = document.getElementById('calList');
+  const day = (allData[canyon] || {})[calSel];
+  const count = day?.sold?.length || 0;
+  document.getElementById('calCount').textContent = `${count} booking${count === 1 ? '' : 's'}`;
+  if (count === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text3);font-size:13px">No bookings</div>`;
+    return;
+  }
+  list.innerHTML = day.sold.map(b => `
+    <div class="booking-card">
+      <div class="booking-co">${b.company}</div>
+      <div style="font-size:12px;color:var(--text2)">${b.time} • Pax: ${b.pax}</div>
+    </div>
+  `).join('');
 }
 
-function sendChatMessage() {
-  const input = document.getElementById('chatInput');
-  if (!input.value.trim()) return;
-  const bubbles = document.getElementById('msgBubbles');
-  bubbles.innerHTML += `<div class="msg-bubble mine">${input.value}</div>`;
-  bubbles.scrollTop = bubbles.scrollHeight;
-  input.value = '';
+function calPrev() { calM--; if(calM < 0){calM = 11; calY--;} renderCal(); }
+function calNext() { calM++; if(calM > 11){calM = 0; calY++;} renderCal(); }
+
+function sendMsg() {
+  const inp = document.getElementById('msgInput');
+  if (!inp.value.trim()) return;
+  inp.value = '';
 }
 
-function showNewMessage() {
-  const name = prompt("Search for a person to message:");
-  if (name && name.trim()) {
-    const newDM = {id: "dm:" + Date.now(), name: name.trim(), type: "dm", icon: "👤"};
-    conversations.unshift(newDM);
-    renderConversations();
-    openChat(newDM.id);
+function scrollMsgs() {
+  const list = document.getElementById('msgList');
+  list.scrollTop = list.scrollHeight;
+}
+
+function setTheme(mode, btn) {
+  document.body.className = mode === 'dark' ? 'dark' : '';
+  if (btn) {
+    btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
 }
 
-function showTab(name, btn) {
-  document.querySelectorAll('#appScreen > .screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(name + 'Tab').classList.add('active');
-  btn.classList.add('active');
-
-  if (name === 'msg') {
-    if (conversations.length === 0) conversations = [...GROUP_CHATS];
-    document.getElementById('chatScreen').style.display = 'none';
-    document.getElementById('conversationsList').style.display = 'block';
-    renderConversations();
-  }
-  if (name === 'cal') {
-    populateCalCanyonDd();
+function setFs(size, btn) {
+  document.documentElement.style.setProperty('--fs', size);
+  if (btn) {
+    btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
 }
 
-// Data loading (simplified - add your full renderHome/renderCal if needed)
-async function loadData(manual = false) {
+async function loadData(force = false) {
   try {
-    const res = await fetch(DATA_URL + '?t=' + Date.now());
+    const res = await fetch(DATA_URL + (force ? `?t=${Date.now()}` : ''));
     const json = await res.json();
     allData = json.data || {};
+    showUpdatedBar(json.updated || '');
     populateCanyons();
-    populateCalCanyonDd();
-    document.getElementById('calCanyonLabel').textContent = canyon;
-    // Add your renderHome() and renderCal() calls here
-  } catch(e) {
-    if (manual) alert('Failed to load data');
-  }
+    dateList = getDateListForCanyon(canyon);
+    dateStr = dateList.includes(todayStr()) ? todayStr() : (dateList[0] || todayStr());
+    populateDates();
+    renderHome();
+  } catch (e) { console.error("Load failed", e); }
 }
 
-async function signInGoogle() {
-  await sb.auth.signInWithOAuth({provider: 'google', options: {redirectTo: window.location.origin}});
-}
-
-function signOut() {
-  sb.auth.signOut();
-  showScreen('loginScreen');
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-async function init() {
-  // Restore text size
-  const savedFs = localStorage.getItem('fs');
-  if (savedFs) document.documentElement.style.setProperty('--fs', savedFs);
-
-  const {data: {session}} = await sb.auth.getSession();
+async function checkUser() {
+  const { data: { session } } = await sb.auth.getSession();
   if (session) {
     user = session.user;
+    document.getElementById('profName').textContent = user.user_metadata?.full_name || 'Staff Member';
+    document.getElementById('profEmail').textContent = user.email;
+    document.getElementById('profAvatar').textContent = (user.user_metadata?.full_name || 'S')[0];
     showScreen('appScreen');
     loadData();
   } else {
@@ -485,7 +710,14 @@ async function init() {
   }
 }
 
-init();
+window.addEventListener('load', () => {
+  checkUser();
+  window.addEventListener('click', (e) => {
+    if (!e.target.closest('.filter-wrap')) {
+      document.querySelectorAll('.filter-dd').forEach(d => d.classList.remove('open'));
+    }
+  });
+});
 </script>
 </body>
 </html>
