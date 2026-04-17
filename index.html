@@ -1,353 +1,590 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
-<title>Canyon Bookings</title>
-<link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#c45e2a"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="Canyon"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#f0ece6;--surface:#fff;--surface2:#e8e4de;--border:#ddd8d0;
-  --text:#1a1208;--text2:#6b6050;--text3:#a89880;
-  --accent:#c45e2a;--accent-bg:#fdf0e8;--accent-light:#f5e0cc;
-  --nav:#fff;--radius:14px;--font:'Inter',sans-serif;--fs:15px;
-}
-.dark{
-  --bg:#1a1510;--surface:#242018;--surface2:#2e2820;--border:#3a3228;
-  --text:#f5f0e8;--text2:#a89070;--text3:#706050;
-  --accent:#e07840;--accent-bg:#2a1e10;--accent-light:#3a2818;--nav:#1e1a14;
-}
-html,body{height:100%;overflow:hidden}
-body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(--text);display:flex;justify-content:center}
-.app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
-.screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
-.screen.active{display:flex}
-/* Loading */
-.loading-wrap{flex:1;display:flex;align-items:center;justify-content:center}
-.spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* Login */
-.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:20px;overflow-y:auto}
-.login-icon{width:72px;height:72px;border-radius:18px;overflow:hidden;background:var(--accent-bg);display:flex;align-items:center;justify-content:center}
-.login-icon img{width:100%;height:100%;object-fit:cover}
-.login-title{font-size:24px;font-weight:700;color:var(--text);text-align:center}
-.login-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.5;max-width:260px}
-.google-btn{display:flex;align-items:center;gap:10px;padding:13px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;width:100%;max-width:280px;justify-content:center}
-.google-btn:hover{background:var(--surface2)}
-.google-btn svg{width:20px;height:20px;flex-shrink:0}
-/* Top bar */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:52px 16px 12px;background:var(--bg);flex-shrink:0}
-.topbar-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px}
-.topbar-actions{display:flex;align-items:center;gap:8px}
-.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.icon-btn svg{width:17px;height:17px;color:var(--text2)}
-.avatar-ph{width:32px;height:32px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--accent)}
-/* Updated banner */
-.updated-bar{padding:6px 16px;font-size:11px;color:var(--text3);flex-shrink:0;display:flex;align-items:center;gap:6px}
-.updated-dot{width:6px;height:6px;border-radius:50%;background:#4caf50;flex-shrink:0}
-.updated-dot.stale{background:#ff9800}
-/* Filters */
-.filters{display:flex;gap:8px;padding:0 16px 10px;flex-shrink:0}
-.filter-wrap{position:relative;flex:1}
-.filter-btn{display:flex;align-items:center;gap:6px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;width:100%}
-.filter-btn svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
-.filter-btn .ch{margin-left:auto;width:12px;height:12px;color:var(--text3);flex-shrink:0}
-.filter-dd{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;overflow:hidden;display:none;max-height:240px;overflow-y:auto}
-.filter-dd.open{display:block}
-.filter-opt{padding:12px 14px;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-.filter-opt:last-child{border-bottom:none}
-.filter-opt.sel{color:var(--accent)}
-.filter-opt.sel::after{content:'✓';color:var(--accent);font-weight:700}
-.filter-opt:hover{background:var(--surface2)}
-.hdiv{height:1px;background:var(--border);flex-shrink:0}
-.summary-bar{padding:8px 16px;font-size:12px;color:var(--text3);flex-shrink:0}
-/* Booking list */
-.bookings-scroll{flex:1;overflow-y:auto;padding:8px 16px 16px;min-height:0}
-.booking-card{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:8px;border:1px solid var(--border)}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-light)}
-.booking-co{font-size:15px;font-weight:700;color:var(--text)}
-/* Calendar */
-.cal-pad{padding:10px 16px;flex-shrink:0}
-.cal-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:14px}
-.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cal-nav-btn{width:30px;height:30px;border-radius:8px;background:none;border:none;cursor:pointer;color:var(--text);font-size:17px;display:flex;align-items:center;justify-content:center}
-.cal-nav-btn:hover{background:var(--surface2)}
-.cal-month{font-size:15px;font-weight:700;color:var(--text)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
-.cal-day{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text)}
-.cal-day.today{background:var(--accent);color:white}
-.cal-day.selected:not(.today){background:var(--accent-bg);color:var(--accent)}
-.cal-info{padding:10px 16px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.cal-date-label{font-size:15px;font-weight:700;color:var(--text)}
-.cal-count{font-size:12px;color:var(--text3)}
-.cal-list{flex:1;overflow-y:auto;padding:0 16px 16px;min-height:0}
-/* Settings */
-.settings-scroll{flex:1;overflow-y:auto;padding:0 16px 24px;min-height:0}
-.sec-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin:16px 0 6px}
-.settings-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:8px}
-.sub-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;padding:12px 14px 6px}
-.seg{display:flex;gap:3px;padding:0 8px 10px}
-.seg-btn{flex:1;padding:7px;border-radius:7px;border:none;background:none;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
-.seg-btn.active{background:var(--surface);color:var(--accent);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.set-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--border)}
-.set-icon{width:32px;height:32px;border-radius:9px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.set-icon svg{width:16px;height:16px;color:var(--accent)}
-.set-info{flex:1}
-.set-label{font-size:14px;font-weight:600;color:var(--text)}
-.set-desc{font-size:11px;color:var(--text3);margin-top:1px}
-.prof-row{display:flex;align-items:center;gap:12px;padding:14px}
-.prof-name{font-size:14px;font-weight:600;color:var(--text)}
-.signout-btn{width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:4px}
-/* Bottom nav */
-.bottom-nav{display:flex;background:var(--nav);border-top:1px solid var(--border);padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:none;background:none;cursor:pointer;font-size:10px;font-weight:500;color:var(--text3);font-family:var(--font)}
-.nav-btn.active{color:var(--accent)}
-.nav-btn svg{width:20px;height:20px}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+    <title>Canyon Bookings Pro</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Canyon">
+    <meta name="theme-color" content="#c45e2a">
 
-/* New Dropdown Style for Calendar Tab */
-.cal-select {
-  background: none;
-  border: none;
-  color: var(--text2);
-  font-family: var(--font);
-  font-size: 12px;
-  font-weight: 500;
-  outline: none;
-  cursor: pointer;
-  padding: 0;
-  appearance: none;
-  -webkit-appearance: none;
-}
-</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* --- CORE SYSTEM & VARIABLES --- */
+        :root {
+            --bg: #f0ece6;
+            --surface: #ffffff;
+            --surface2: #e8e4de;
+            --border: #ddd8d0;
+            --text: #1a1208;
+            --text2: #6b6050;
+            --text3: #a89880;
+            --accent: #c45e2a;
+            --accent-bg: #fdf0e8;
+            --accent-light: #f5e0cc;
+            --nav: #ffffff;
+            --radius: 16px;
+            --font: 'Inter', -apple-system, sans-serif;
+            --fs: 15px; /* Scalable Font Variable */
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        .dark {
+            --bg: #1a1510;
+            --surface: #242018;
+            --surface2: #2e2820;
+            --border: #3a3228;
+            --text: #f5f0e8;
+            --text2: #a89070;
+            --text3: #706050;
+            --accent: #e07840;
+            --accent-bg: #2a1e10;
+            --accent-light: #3a2818;
+            --nav: #1e1a14;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: #000; 
+            font-family: var(--font); 
+            font-size: var(--fs); 
+            color: var(--text);
+            transition: font-size 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body { display: flex; justify-content: center; background: var(--bg); }
+
+        .app-shell {
+            width: 100%;
+            max-width: 430px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+
+        /* --- SCREEN MANAGEMENT --- */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+            animation: screen-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .screen.active { display: flex; }
+
+        @keyframes screen-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- AUTH & ONBOARDING --- */
+        .auth-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 24px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo-box {
+            width: 80px; height: 80px;
+            background: var(--accent-bg);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; margin-bottom: 24px;
+            box-shadow: 0 10px 20px rgba(196, 94, 42, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .onboard-step { display: none; width: 100%; flex-direction: column; gap: 20px; }
+        .onboard-step.active { display: flex; }
+
+        .role-option {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .role-option.selected { border-color: var(--accent); background: var(--accent-bg); }
+
+        /* --- NAVIGATION & HEADERS --- */
+        header {
+            padding: calc(50px + var(--safe-top)) 20px 12px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .header-left h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+        .header-sub { font-size: 12px; color: var(--text2); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+        .nav-bar {
+            padding-bottom: var(--safe-bottom);
+            background: var(--nav);
+            border-top: 1px solid var(--border);
+            display: flex;
+            height: calc(65px + var(--safe-bottom));
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text3);
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .nav-btn.active { color: var(--accent); }
+        .nav-btn svg { width: 22px; height: 22px; }
+
+        /* --- COMPONENT STYLES --- */
+        .scroll-view { flex: 1; overflow-y: auto; padding: 10px 20px 20px; }
+        
+        .booking-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: transform 0.1s;
+        }
+
+        .time-badge {
+            background: var(--accent-bg);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            display: inline-block;
+        }
+
+        /* --- CALENDAR SYSTEM --- */
+        .cal-wrapper { padding: 0 20px; }
+        .cal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 16px; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cal-day-label { font-size: 10px; font-weight: 800; color: var(--text3); text-align: center; margin-bottom: 8px; }
+        .cal-cell { 
+            aspect-ratio: 1; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 14px; font-weight: 600; border-radius: 12px; 
+            cursor: pointer; position: relative;
+        }
+        .cal-cell.today { background: var(--accent); color: white; }
+        .cal-cell.has-data::after {
+            content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px;
+            background: var(--accent); border-radius: 50%;
+        }
+
+        /* --- SETTINGS ROWS --- */
+        .settings-sec { margin-bottom: 24px; }
+        .sec-title { font-size: 11px; font-weight: 800; color: var(--text3); text-transform: uppercase; margin: 0 20px 10px; }
+        .row-group { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .row { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .row:last-child { border-bottom: none; }
+
+        .seg-control { display: flex; background: var(--surface2); padding: 3px; border-radius: 10px; gap: 4px; }
+        .seg-btn { padding: 6px 14px; border: none; background: none; font-size: 12px; font-weight: 700; color: var(--text2); border-radius: 7px; cursor: pointer; }
+        .seg-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* --- MESSAGING UI --- */
+        .msg-container { flex: 1; display: flex; flex-direction: column; background: var(--surface2); }
+        .msg-list { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
+        .bubble.me { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .bubble.them { align-self: flex-start; background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; }
+        .msg-input-bar { padding: 12px 20px; background: var(--surface); display: flex; gap: 10px; padding-bottom: calc(12px + var(--safe-bottom)); }
+        .msg-input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border); background: var(--bg); outline: none; }
+
+        /* --- DROPDOWN --- */
+        .dropdown { position: absolute; top: calc(100% + 5px); left: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 200; display: none; }
+        .dropdown.open { display: block; }
+        .dd-item { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; }
+        .dd-item:last-child { border-bottom: none; }
+    </style>
 </head>
 <body>
-<div class="app" id="app">
 
-  <div class="screen active" id="loadingScreen">
-    <div class="loading-wrap"><div class="spinner"></div></div>
-  </div>
+    <div class="app-shell">
 
-  <div class="screen" id="appScreen">
-
-    <div class="screen active" id="homeTab">
-      <div class="topbar">
-        <div class="topbar-title">Canyon Bookings</div>
-        <div class="topbar-actions">
-          <button class="icon-btn" onclick="loadData(true)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          </button>
-          <div class="avatar-ph">JD</div>
-        </div>
-      </div>
-      <div class="updated-bar" id="updatedBar">
-        <div class="updated-dot"></div>
-        <span id="updatedText">Updated 5m ago</span>
-      </div>
-      <div class="filters">
-        <div class="filter-wrap">
-          <button class="filter-btn" onclick="toggleDd('canyonDd')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span id="canyonLabel" style="flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Empress</span>
-            <svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="filter-dd" id="canyonDd"></div>
-        </div>
-        <div class="filter-wrap">
-          <button class="filter-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span style="flex:1;text-align:left">Today</span>
-          </button>
-        </div>
-      </div>
-      <div class="hdiv"></div>
-      <div class="summary-bar" id="homeSummary">Loading...</div>
-      <div class="bookings-scroll" id="homeList"></div>
-    </div>
-
-    <div class="screen" id="calTab">
-      <div class="topbar">
-        <div>
-          <div class="topbar-title">Calendar</div>
-          <select id="calCanyonSelect" class="cal-select" onchange="selCanyon(this.value)">
-            </select>
-        </div>
-      </div>
-      <div class="hdiv"></div>
-      <div class="cal-pad">
-        <div class="cal-card">
-          <div class="cal-nav">
-            <button class="cal-nav-btn" onclick="calPrev()">‹</button>
-            <div class="cal-month" id="calMonth">April 2026</div>
-            <button class="cal-nav-btn" onclick="calNext()">›</button>
-          </div>
-          <div class="cal-grid" id="calGrid"></div>
-        </div>
-      </div>
-      <div class="cal-info">
-        <div class="cal-date-label" id="calDateLabel">Friday 17 April</div>
-        <div class="cal-count" id="calCount"></div>
-      </div>
-      <div class="hdiv"></div>
-      <div class="cal-list" id="calList"></div>
-    </div>
-
-    <div class="screen" id="settingsTab">
-      <div class="topbar"><div class="topbar-title">Settings</div></div>
-      <div class="hdiv"></div>
-      <div class="settings-scroll">
-        <div class="sec-label">Appearance</div>
-        <div class="settings-card">
-          <div class="sub-label">THEME</div>
-          <div class="seg" style="background:var(--surface2);margin:0 8px 10px;border-radius:9px;padding:3px">
-            <button class="seg-btn active" onclick="setTheme('light',this)">Light</button>
-            <button class="seg-btn" onclick="setTheme('dark',this)">Dark</button>
-          </div>
-          <div class="sub-label" style="border-top:1px solid var(--border)">TEXT SIZE</div>
-          <div class="seg" style="background:var(--surface2);margin:0 8px 10px;border-radius:9px;padding:3px">
-            <button class="seg-btn" onclick="setFs('13px',this)">Small</button>
-            <button class="seg-btn active" onclick="setFs('15px',this)">Medium</button>
-            <button class="seg-btn" onclick="setFs('17px',this)">Large</button>
-          </div>
-        </div>
-        <div class="sec-label">Data</div>
-        <div class="settings-card">
-          <div class="set-row" style="border-top:none">
-            <div class="set-icon">🕒</div>
-            <div class="set-info">
-              <div class="set-label">Last updated</div>
-              <div class="set-desc" id="settingsUpdated">2026-04-17 09:30</div>
+        <div class="screen active" id="loading">
+            <div class="auth-container">
+                <div class="logo-box">⛰️</div>
+                <div style="width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
             </div>
-          </div>
-          <div class="set-row">
-            <div class="set-icon">📍</div>
-            <div class="set-info">
-              <div class="set-label">Canyons tracked</div>
-              <div class="set-desc" id="settingsCanyons">Empress, Grand Canyon, Narrow Neck</div>
-            </div>
-          </div>
         </div>
-        <button class="signout-btn">Sign Out</button>
-      </div>
+
+        <div class="screen" id="auth">
+            <div class="auth-container">
+                <div class="logo-box">🏔️</div>
+                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 12px;">Canyon Bookings</h1>
+                <p style="color: var(--text2); margin-bottom: 32px;">Manage your trips and coordinate with your crew.</p>
+                <button class="btn-primary" onclick="goToOnboarding()">Continue with Google</button>
+            </div>
+        </div>
+
+        <div class="screen" id="onboarding">
+            <header><div class="header-left"><h1>Setup</h1></div></header>
+            <div class="scroll-view">
+                <div class="onboard-step active" id="step-role">
+                    <h2 style="font-size: 20px;">What is your role?</h2>
+                    <div class="role-option" id="opt-guide" onclick="selectRole('guide')">
+                        <div style="font-size: 18px; font-weight: 700;">🧗 Guide</div>
+                        <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">I lead trips and need to see my schedule.</div>
+                    </div>
+                    <div class="role-option" id="opt-owner" onclick="selectRole('owner')">
+                        <div style="font-size: 18px; font-weight: 700;">🏢 Business Owner</div>
+                        <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">I run a company and manage multiple guides.</div>
+                    </div>
+                    <button class="btn-primary" onclick="onboardNext(2)">Continue</button>
+                </div>
+                <div class="onboard-step" id="step-org">
+                    <h2 style="font-size: 20px;">Join an Organisation</h2>
+                    <input type="text" placeholder="Search Company Name..." style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border);">
+                    <div style="padding: 20px; border: 1px dashed var(--border); border-radius: 12px; text-align: center; color: var(--text3);">No results found</div>
+                    <button class="btn-primary" onclick="finishOnboarding()">Complete Setup</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="main">
+            
+            <div class="screen active" id="home-tab">
+                <header>
+                    <div class="header-left">
+                        <h1>Canyon Bookings</h1>
+                        <button class="header-sub" onclick="toggleDD()">
+                            <span id="current-canyon-label">Empress Canyon</span> ▼
+                        </button>
+                    </div>
+                    <div class="icon-action-btn" onclick="syncData()" style="cursor:pointer">🔄</div>
+                </header>
+
+                <div class="dropdown" id="canyon-dd">
+                    </div>
+
+                <div class="scroll-view" id="booking-list">
+                    </div>
+            </div>
+
+            <div class="screen" id="cal-tab">
+                <header>
+                    <div class="header-left">
+                        <h1>Calendar</h1>
+                        <select id="cal-canyon-select" style="background:none; border:none; font-weight:600; font-size:12px; color:var(--text2); outline:none;" onchange="updateCanyon(this.value)">
+                            </select>
+                    </div>
+                </header>
+                <div class="cal-wrapper">
+                    <div class="cal-box">
+                        <div class="cal-header">
+                            <button onclick="changeMonth(-1)" style="background:none; border:none; font-size:20px;">‹</button>
+                            <div style="font-weight:800;" id="cal-month-title">April 2026</div>
+                            <button onclick="changeMonth(1)" style="background:none; border:none; font-size:20px;">›</button>
+                        </div>
+                        <div class="cal-grid" id="cal-grid">
+                            </div>
+                    </div>
+                </div>
+                <div class="scroll-view" id="cal-details">
+                    <p style="text-align:center; color:var(--text3); margin-top:30px;">Select a date to see trips</p>
+                </div>
+            </div>
+
+            <div class="screen" id="msg-tab">
+                <header><div class="header-left"><h1>Crew Chat</h1></div></header>
+                <div class="msg-container">
+                    <div class="msg-list" id="msg-list">
+                        <div class="bubble them">Hey team, Empress is running high today. Check the water levels.</div>
+                        <div class="bubble me">Copy that, I'll take the backup ropes just in case.</div>
+                    </div>
+                    <div class="msg-input-bar">
+                        <input type="text" class="msg-input" placeholder="Message crew...">
+                        <button style="background:var(--accent); color:white; border:none; border-radius:50%; width:40px; height:40px;">↗</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen" id="set-tab">
+                <header><div class="header-left"><h1>Settings</h1></div></header>
+                <div class="scroll-view">
+                    
+                    <div class="settings-sec">
+                        <div class="sec-title">Appearance</div>
+                        <div class="row-group">
+                            <div class="row">
+                                <span>Dark Mode</span>
+                                <div class="seg-control">
+                                    <button class="seg-btn active" onclick="setTheme('light', this)">Off</button>
+                                    <button class="seg-btn" onclick="setTheme('dark', this)">On</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <span>Text Size</span>
+                                <div class="seg-control">
+                                    <button class="seg-btn" onclick="setFS('13px', this)">S</button>
+                                    <button class="seg-btn active" onclick="setFS('15px', this)">M</button>
+                                    <button class="seg-btn" onclick="setFS('18px', this)">L</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-sec">
+                        <div class="sec-title">Personal</div>
+                        <div class="row-group">
+                            <div class="row"><span>My Profile</span><span>›</span></div>
+                            <div class="row"><span>Notifications</span><span>On</span></div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" style="background:var(--surface); border:1px solid var(--border); color:#ff4444; margin-top:20px;" onclick="location.reload()">Sign Out</button>
+
+                </div>
+            </div>
+
+            <nav class="nav-bar">
+                <button class="nav-btn active" onclick="showTab('home', this)">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
+                </button>
+                <button class="nav-btn" onclick="showTab('cal', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Calendar
+                </button>
+                <button class="nav-btn" onclick="showTab('msg', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3z"></path></svg>Messages
+                </button>
+                <button class="nav-btn" onclick="showTab('set', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Settings
+                </button>
+            </nav>
+        </div>
     </div>
 
-    <div class="bottom-nav">
-      <button class="nav-btn active" onclick="showTab('home',this)">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
-      </button>
-      <button class="nav-btn" onclick="showTab('cal',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar
-      </button>
-      <button class="nav-btn" onclick="showTab('settings',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings
-      </button>
-    </div>
-  </div>
-</div>
+    <script>
+        // --- STATE ---
+        const CANYONS = ["Empress Canyon", "Grand Canyon", "Narrow Neck", "Mt Hay", "Bowens Creek"];
+        let currentCanyon = "Empress Canyon";
+        let bookingData = {};
+        let viewM = new Date().getMonth(), viewY = new Date().getFullYear();
 
-<script>
-const CANYON_ORDER = ['Empress', 'Grand Canyon', 'Narrow Neck'];
-let allData = {
-  "Empress": { "2026-04-17": { sold: ["09:30:00", "11:00:00"] } },
-  "Grand Canyon": { "2026-04-17": { sold: ["10:30:00"] } },
-  "Narrow Neck": { "2026-04-17": { sold: [] } }
-};
-let canyon = 'Empress';
+        // --- NAVIGATION & UI ---
+        function showScreen(id) {
+            document.querySelectorAll('.app-shell > .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
 
-// 1. UPDATED TIME FORMATTER (Exactly 9:30am)
-const parseTime = iso => {
-  try {
-    const d = new Date(iso.includes('T') ? iso : `2026-04-17T${iso}`);
-    let h = d.getHours();
-    const m = d.getMinutes().toString().padStart(2, '0');
-    const ampm = h >= 12 ? 'pm' : 'am';
-    h = h % 12 || 12;
-    return `${h}:${m}${ampm}`;
-  } catch { return iso; }
-};
+        function showTab(tab, btn) {
+            document.querySelectorAll('#main > .screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            btn.classList.add('active');
+            if(tab === 'cal') renderCalendar();
+        }
 
-// 2. UPDATED TEXT SIZE (Global Update)
-function setFs(size, btn) {
-  document.documentElement.style.setProperty('--fs', size);
-  const parent = btn.parentElement;
-  parent.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+        function toggleDD() { document.getElementById('canyon-dd').classList.toggle('open'); }
 
-// 3. UPDATED CANYON SYNCING
-function populateCanyons() {
-  const dd = document.getElementById('canyonDd');
-  const calSelect = document.getElementById('calCanyonSelect');
-  
-  // Home dropdown items
-  dd.innerHTML = CANYON_ORDER.map(c =>
-    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c}')">${c}</div>`
-  ).join('');
+        // --- AUTH & ONBOARDING ---
+        function goToOnboarding() { showScreen('onboarding'); }
+        
+        let userRole = '';
+        function selectRole(role) {
+            userRole = role;
+            document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+            document.getElementById('opt-' + role).classList.add('selected');
+        }
 
-  // Calendar select items
-  calSelect.innerHTML = CANYON_ORDER.map(c => 
-    `<option value="${c}" ${c === canyon ? 'selected' : ''}>${c}</option>`
-  ).join('');
-}
+        function onboardNext(step) {
+            if(step === 2) {
+                document.getElementById('step-role').classList.remove('active');
+                document.getElementById('step-org').classList.add('active');
+            }
+        }
 
-function selCanyon(c) {
-  canyon = c;
-  document.getElementById('canyonLabel').textContent = c;
-  document.getElementById('calCanyonSelect').value = c;
-  document.getElementById('canyonDd').classList.remove('open');
-  renderHome();
-  renderCal();
-}
+        function finishOnboarding() { showScreen('main'); syncData(); }
 
-// Navigation & Theme
-function showTab(name, btn) {
-  document.querySelectorAll('#appScreen>.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(name + 'Tab').classList.add('active');
-  btn.classList.add('active');
-}
+        // --- CORE DATA ENGINE ---
+        // Forced Time Format: 9:30am
+        function formatTime(str) {
+            const [h, m] = str.split(':');
+            let hour = parseInt(h);
+            const ampm = hour >= 12 ? 'pm' : 'am';
+            hour = hour % 12 || 12;
+            return `${hour}:${m}${ampm}`;
+        }
 
-function setTheme(theme, btn) {
-  document.body.classList.toggle('dark', theme === 'dark');
-  btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+        async function syncData() {
+            // Mock Data Integration
+            bookingData = {
+                "Empress Canyon": {
+                    "2026-04-17": ["09:30", "11:00", "14:15"],
+                    "2026-04-18": ["10:00"]
+                },
+                "Grand Canyon": {
+                    "2026-04-17": ["08:45", "13:30"]
+                }
+            };
+            populateCanyons();
+            renderBookings();
+            setTimeout(() => {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('auth').classList.add('active');
+            }, 800);
+        }
 
-function toggleDd(id) {
-  document.getElementById(id).classList.toggle('open');
-}
+        function populateCanyons() {
+            const dd = document.getElementById('canyon-dd');
+            const sel = document.getElementById('cal-canyon-select');
+            
+            dd.innerHTML = CANYONS.map(c => `
+                <div class="dd-item" onclick="updateCanyon('${c}')">${c}</div>
+            `).join('');
 
-// Logic to render lists
-function renderHome() {
-  const list = document.getElementById('homeList');
-  const dayData = allData[canyon]["2026-04-17"] || { sold: [] };
-  list.innerHTML = dayData.sold.map(t => `
-    <div class="booking-card">
-      <div class="badge">🕒 ${parseTime(t)}</div>
-      <div class="booking-co" style="margin-top:8px">${canyon}</div>
-    </div>
-  `).join('') || '<div style="text-align:center;padding:40px;color:var(--text3)">No bookings found</div>';
-  document.getElementById('homeSummary').textContent = `${dayData.sold.length} Bookings found`;
-}
+            sel.innerHTML = CANYONS.map(c => `
+                <option value="${c}" ${c === currentCanyon ? 'selected' : ''}>${c}</option>
+            `).join('');
+        }
 
-function renderCal() {
-  const grid = document.getElementById('calGrid');
-  grid.innerHTML = Array.from({length:30}, (_,i)=>`<div class="cal-day ${i+1===17?'today':''}">${i+1}</div>`).join('');
-}
+        function updateCanyon(name) {
+            currentCanyon = name;
+            document.getElementById('current-canyon-label').textContent = name;
+            document.getElementById('cal-canyon-select').value = name;
+            document.getElementById('canyon-dd').classList.remove('open');
+            renderBookings();
+            renderCalendar();
+        }
 
-// Init
-window.onload = () => {
-  populateCanyons();
-  renderHome();
-  renderCal();
-  setTimeout(()=>document.getElementById('loadingScreen').classList.remove('active'), 800);
-};
-</script>
+        function renderBookings() {
+            const list = document.getElementById('booking-list');
+            const today = "2026-04-17";
+            const trips = (bookingData[currentCanyon] && bookingData[currentCanyon][today]) || [];
+
+            if(trips.length === 0) {
+                list.innerHTML = `<p style="text-align:center; padding:50px; color:var(--text3)">No trips today for ${currentCanyon}</p>`;
+                return;
+            }
+
+            list.innerHTML = trips.map(t => `
+                <div class="booking-card">
+                    <div class="time-badge">${formatTime(t)}</div>
+                    <div style="font-weight:800; margin-top:12px; font-size:16px;">${currentCanyon} Trip</div>
+                    <div style="font-size:13px; color:var(--text2); margin-top:4px;">6 Clients • Lead: J. Wilson</div>
+                </div>
+            `).join('');
+        }
+
+        // --- CALENDAR ENGINE ---
+        function renderCalendar() {
+            const grid = document.getElementById('cal-grid');
+            const title = document.getElementById('cal-month-title');
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            title.textContent = `${monthNames[viewM]} ${viewY}`;
+            grid.innerHTML = ['M','T','W','T','F','S','S'].map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+            const firstDay = new Date(viewY, viewM, 1).getDay();
+            const daysInMonth = new Date(viewY, viewM + 1, 0).getDate();
+            const offset = (firstDay === 0) ? 6 : firstDay - 1;
+
+            for(let i=0; i<offset; i++) grid.appendChild(document.createElement('div'));
+
+            for(let d=1; d<=daysInMonth; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'cal-cell';
+                if(d === 17 && viewM === 3) cell.classList.add('today');
+                
+                const dateKey = `${viewY}-${(viewM+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+                if(bookingData[currentCanyon]?.[dateKey]) cell.classList.add('has-data');
+                
+                cell.textContent = d;
+                cell.onclick = () => showDay(dateKey, d);
+                grid.appendChild(cell);
+            }
+        }
+
+        function changeMonth(dir) {
+            viewM += dir;
+            if(viewM > 11) { viewM = 0; viewY++; }
+            if(viewM < 0) { viewM = 11; viewY--; }
+            renderCalendar();
+        }
+
+        function showDay(key, day) {
+            const details = document.getElementById('cal-details');
+            const trips = bookingData[currentCanyon]?.[key] || [];
+            
+            if(trips.length === 0) {
+                details.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text3)">No trips on ${day} ${document.getElementById('cal-month-title').textContent}</p>`;
+                return;
+            }
+
+            details.innerHTML = `
+                <h3 style="font-size:14px; margin-bottom:12px;">Trips for ${day} ${document.getElementById('cal-month-title').textContent}</h3>
+                ${trips.map(t => `
+                    <div class="booking-card">
+                        <div class="time-badge">${formatTime(t)}</div>
+                        <div style="font-weight:700; margin-top:10px;">${currentCanyon}</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // --- SETTINGS ---
+        function setTheme(mode, btn) {
+            document.body.classList.toggle('dark', mode === 'dark');
+            toggleSeg(btn);
+        }
+
+        function setFS(size, btn) {
+            document.documentElement.style.setProperty('--fs', size);
+            toggleSeg(btn);
+        }
+
+        function toggleSeg(btn) {
+            btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        window.onload = syncData;
+    </script>
 </body>
 </html>
