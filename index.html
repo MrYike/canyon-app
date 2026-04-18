@@ -313,7 +313,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="cal-list" id="calList"></div>
     </div>
 
-    <!-- ==================== MESSAGES TAB WITH GROUP CHATS ==================== -->
+    <!-- MESSAGES TAB WITH GROUP CHATS -->
     <div class="screen" id="msgTab">
       <div class="topbar">
         <div class="topbar-title">Messages</div>
@@ -445,7 +445,7 @@ const CANYON_CHATS = [
   { id: '542aebcf-e059-44b4-8c24-83e9ad5bac0e', name: 'Narrow Neck' }
 ];
 
-// ── Helpers ────────────────────────────────────────────────────────────
+// Helpers
 const todayStr = () => new Date().toISOString().slice(0, 10);
 function fmtFull(s) {
   const d = new Date(s + 'T12:00:00'), t = todayStr();
@@ -458,7 +458,7 @@ function getDateListForCanyon(c) {
   return Object.keys(allData[c] || {}).sort();
 }
 
-// ── Canyon dropdown ────────────────────────────────────────────────────
+// Canyon dropdown
 function populateCanyons() {
   const canyons = Object.keys(allData).sort((a, b) => {
     const ia = CANYON_ORDER.indexOf(a), ib = CANYON_ORDER.indexOf(b);
@@ -468,13 +468,19 @@ function populateCanyons() {
     return ia - ib;
   });
   const dd = document.getElementById('canyonDd');
-  dd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`).join('');
+  dd.innerHTML = canyons.map(c =>
+    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
+  ).join('');
   const calDd = document.getElementById('calCanyonDd');
-  if (calDd) calDd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`).join('');
+  if (calDd) {
+    calDd.innerHTML = canyons.map(c =>
+      `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
+    ).join('');
+  }
   document.getElementById('settingsCanyons').textContent = canyons.join(', ');
 }
 
-// ── Messages (Group Chats) ─────────────────────────────────────────────
+// Messages - Group Chats
 function loadConversations() {
   const container = document.getElementById('convListView');
   document.getElementById('chatView').style.display = 'none';
@@ -538,7 +544,7 @@ function backToConversations() {
   loadConversations();
 }
 
-// ── Rest of your original script (unchanged) ───────────────────────────
+// Original functions
 function toggleDd(id) {
   const el = document.getElementById(id);
   const isOpen = el.classList.contains('open');
@@ -630,15 +636,6 @@ function renderCalList() {
 }
 function calPrev() { calM--; if(calM < 0){calM = 11; calY--;} renderCal(); }
 function calNext() { calM++; if(calM > 11){calM = 0; calY++;} renderCal(); }
-function sendMsg() {
-  const inp = document.getElementById('msgInput');
-  if (!inp.value.trim()) return;
-  inp.value = '';
-}
-function scrollMsgs() {
-  const list = document.getElementById('msgList');
-  list.scrollTop = list.scrollHeight;
-}
 function setTheme(mode, btn) {
   document.body.className = mode === 'dark' ? 'dark' : '';
   if (btn) {
@@ -689,7 +686,46 @@ function showTab(name, btn) {
   document.getElementById(name + 'Tab').classList.add('active');
   btn.classList.add('active');
   if (name === 'cal') renderCal();
-  if (name === 'msg') loadConversations();   // ← THIS WAS MISSING
+  if (name === 'msg') loadConversations();
+}
+async function signInGoogle() {
+  console.log("Sign in with Google clicked");   // DEBUG LINE
+  await sb.auth.signInWithOAuth({provider:'google', options:{redirectTo:window.location.origin}});
+}
+async function signOut() {
+  if (messageSubscription) messageSubscription.unsubscribe();
+  await sb.auth.signOut();
+  user = null; profile = null;
+  showScreen('loginScreen');
+}
+// Onboarding stubs
+let currentStep = 1;
+function selectRole(r) {
+  selectedRole = r;
+  document.getElementById('roleGuide').classList.toggle('selected', r === 'guide');
+  document.getElementById('roleOwner').classList.toggle('selected', r === 'owner');
+  const nextBtn = document.getElementById('step1Next');
+  nextBtn.disabled = false;
+  nextBtn.style.opacity = 1;
+}
+function nextStep() {
+  document.querySelectorAll('.onboard-step').forEach(el => el.classList.remove('active'));
+  if (currentStep === 1) {
+    currentStep = 2;
+    document.getElementById(selectedRole === 'guide' ? 'step2Guide' : 'step2Owner').classList.add('active');
+    document.getElementById('onboardStep').textContent = 'Step 2 of 3';
+  } else if (currentStep === 2) {
+    currentStep = 3;
+    document.getElementById('step3').classList.add('active');
+    document.getElementById('onboardStep').textContent = 'Step 3 of 3';
+  }
+}
+function searchOrgs() {}
+function addOrgFromInput() {}
+function submitOwner() { nextStep(); }
+function finishOnboarding() {
+  showScreen('appScreen');
+  loadData();
 }
 window.addEventListener('load', () => {
   checkUser();
