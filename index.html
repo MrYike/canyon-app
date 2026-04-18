@@ -313,7 +313,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="cal-list" id="calList"></div>
     </div>
 
-    <!-- MESSAGES TAB WITH 3 CANYON GROUP CHATS -->
+    <!-- MESSAGES TAB WITH GROUP CHATS -->
     <div class="screen" id="msgTab">
       <div class="topbar">
         <div class="topbar-title">Messages</div>
@@ -468,9 +468,15 @@ function populateCanyons() {
     return ia - ib;
   });
   const dd = document.getElementById('canyonDd');
-  dd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`).join('');
+  dd.innerHTML = canyons.map(c =>
+    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
+  ).join('');
   const calDd = document.getElementById('calCanyonDd');
-  if (calDd) calDd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`).join('');
+  if (calDd) {
+    calDd.innerHTML = canyons.map(c =>
+      `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
+    ).join('');
+  }
   document.getElementById('settingsCanyons').textContent = canyons.join(', ');
 }
 
@@ -497,7 +503,12 @@ async function openConversation(id, name) {
 }
 
 async function loadMessages() {
-  const { data } = await sb.from('messages').select('*').eq('conversation_id', currentConversation.id).order('created_at', { ascending: true });
+  const { data, error } = await sb
+    .from('messages')
+    .select('*')
+    .eq('conversation_id', currentConversation.id)
+    .order('created_at', { ascending: true });
+  if (error) console.error("Load messages error:", error);
   renderMessages(data || []);
 }
 
@@ -518,7 +529,10 @@ async function sendMsg() {
   const input = document.getElementById('msgInput');
   const content = input.value.trim();
   if (!content || !currentConversation || !user) return;
-  await sb.from('messages').insert({ conversation_id: currentConversation.id, sender_id: user.id, content });
+  const { error } = await sb
+    .from('messages')
+    .insert({ conversation_id: currentConversation.id, sender_id: user.id, content });
+  if (error) console.error("Send error:", error);
   input.value = '';
   loadMessages();
 }
@@ -538,30 +552,7 @@ function backToConversations() {
   loadConversations();
 }
 
-// Updated banner
-function showUpdatedBar(updatedStr) {
-  if (!updatedStr) return;
-  dataUpdated = updatedStr;
-  const parts = updatedStr.match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/);
-  let label = updatedStr;
-  let stale = false;
-  if (parts) {
-    const dt = new Date(parts[1] + 'T' + parts[2] + ':00');
-    const diffMins = (Date.now() - dt.getTime()) / 60000;
-    if (diffMins < 90) {
-      label = `Updated ${Math.round(diffMins)}m ago`;
-    } else {
-      label = `Updated ${dt.toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true})} ${dt.toLocaleDateString('en-AU', {day:'numeric', month:'short'})}`;
-      stale = diffMins > 120;
-    }
-  }
-  document.getElementById('updatedText').textContent = label;
-  document.getElementById('updatedDot').className = 'updated-dot' + (stale ? ' stale' : '');
-  document.getElementById('updatedBar').style.display = 'flex';
-  document.getElementById('settingsUpdated').textContent = updatedStr;
-}
-
-// Rest of original functions
+// Original functions (unchanged)
 function toggleDd(id) {
   const el = document.getElementById(id);
   const isOpen = el.classList.contains('open');
@@ -714,7 +705,6 @@ async function signOut() {
   user = null; profile = null;
   showScreen('loginScreen');
 }
-// Onboarding
 let currentStep = 1;
 function selectRole(r) {
   selectedRole = r;
