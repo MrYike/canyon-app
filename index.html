@@ -313,7 +313,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="cal-list" id="calList"></div>
     </div>
 
-    <!-- MESSAGES TAB WITH GROUP CHATS -->
+    <!-- MESSAGES TAB WITH 3 CANYON GROUP CHATS -->
     <div class="screen" id="msgTab">
       <div class="topbar">
         <div class="topbar-title">Messages</div>
@@ -468,15 +468,9 @@ function populateCanyons() {
     return ia - ib;
   });
   const dd = document.getElementById('canyonDd');
-  dd.innerHTML = canyons.map(c =>
-    `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
-  ).join('');
+  dd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`).join('');
   const calDd = document.getElementById('calCanyonDd');
-  if (calDd) {
-    calDd.innerHTML = canyons.map(c =>
-      `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
-    ).join('');
-  }
+  if (calDd) calDd.innerHTML = canyons.map(c => `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`).join('');
   document.getElementById('settingsCanyons').textContent = canyons.join(', ');
 }
 
@@ -544,7 +538,30 @@ function backToConversations() {
   loadConversations();
 }
 
-// Original functions
+// Updated banner
+function showUpdatedBar(updatedStr) {
+  if (!updatedStr) return;
+  dataUpdated = updatedStr;
+  const parts = updatedStr.match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/);
+  let label = updatedStr;
+  let stale = false;
+  if (parts) {
+    const dt = new Date(parts[1] + 'T' + parts[2] + ':00');
+    const diffMins = (Date.now() - dt.getTime()) / 60000;
+    if (diffMins < 90) {
+      label = `Updated ${Math.round(diffMins)}m ago`;
+    } else {
+      label = `Updated ${dt.toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true})} ${dt.toLocaleDateString('en-AU', {day:'numeric', month:'short'})}`;
+      stale = diffMins > 120;
+    }
+  }
+  document.getElementById('updatedText').textContent = label;
+  document.getElementById('updatedDot').className = 'updated-dot' + (stale ? ' stale' : '');
+  document.getElementById('updatedBar').style.display = 'flex';
+  document.getElementById('settingsUpdated').textContent = updatedStr;
+}
+
+// Rest of original functions
 function toggleDd(id) {
   const el = document.getElementById(id);
   const isOpen = el.classList.contains('open');
@@ -689,7 +706,6 @@ function showTab(name, btn) {
   if (name === 'msg') loadConversations();
 }
 async function signInGoogle() {
-  console.log("Sign in with Google clicked");   // DEBUG LINE
   await sb.auth.signInWithOAuth({provider:'google', options:{redirectTo:window.location.origin}});
 }
 async function signOut() {
@@ -698,7 +714,7 @@ async function signOut() {
   user = null; profile = null;
   showScreen('loginScreen');
 }
-// Onboarding stubs
+// Onboarding
 let currentStep = 1;
 function selectRole(r) {
   selectedRole = r;
