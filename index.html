@@ -33,7 +33,6 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .loading-wrap{flex:1;display:flex;align-items:center;justify-content:center}
 .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinning{animation:spin 1s linear infinite}
 /* Login */
 .login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:20px;overflow-y:auto}
 .login-icon{width:72px;height:72px;border-radius:18px;overflow:hidden;background:var(--accent-bg);display:flex;align-items:center;justify-content:center}
@@ -126,8 +125,12 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
 .cal-date-label{font-size:15px;font-weight:700;color:var(--text)}
 .cal-count{font-size:12px;color:var(--text3)}
 .cal-list{flex:1;overflow-y:auto;padding:0 16px 16px;min-height:0}
-/* Messages */
+/* Messages - NEW */
 .msg-list{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.conversation-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.conversation-item:hover{background:var(--surface2)}
+.conversation-item .conv-name{font-size:16px;font-weight:600;color:var(--text)}
+.conversation-item .conv-sub{font-size:13px;color:var(--text2)}
 .msg-bubble{max-width:78%;padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.4}
 .msg-bubble.mine{background:var(--accent);color:white;align-self:flex-end;border-bottom-right-radius:4px}
 .msg-bubble.theirs{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
@@ -309,19 +312,33 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
       <div class="hdiv"></div>
       <div class="cal-list" id="calList"></div>
     </div>
+
+    <!-- ==================== MESSAGES TAB WITH GROUP CHATS ==================== -->
     <div class="screen" id="msgTab">
       <div class="topbar">
         <div class="topbar-title">Messages</div>
       </div>
       <div class="hdiv"></div>
-      <div class="msg-list" id="msgList"></div>
-      <div class="msg-bar">
-        <input class="msg-input" id="msgInput" placeholder="Message your team..." onkeydown="if(event.key==='Enter')sendMsg()"/>
-        <button class="msg-send" onclick="sendMsg()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+
+      <!-- Conversation List -->
+      <div id="convListView" class="msg-list"></div>
+
+      <!-- Individual Chat View -->
+      <div id="chatView" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+        <div style="padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <button onclick="backToConversations()" style="background:none;border:none;font-size:24px;color:var(--accent)">←</button>
+          <div id="chatHeaderName" style="font-size:17px;font-weight:700;color:var(--text)"></div>
+        </div>
+        <div class="msg-list" id="chatMessageList"></div>
+        <div class="msg-bar">
+          <input class="msg-input" id="msgInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+          <button class="msg-send" onclick="sendMsg()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
       </div>
     </div>
+
     <div class="screen" id="settingsTab">
       <div class="topbar"><div class="topbar-title">Settings</div></div>
       <div class="hdiv"></div>
@@ -402,6 +419,7 @@ body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(
     </div>
   </div>
 </div>
+
 <script>
 const {createClient} = supabase;
 const sb = createClient(
@@ -409,22 +427,29 @@ const sb = createClient(
   'sb_publishable_aobHSo8qxS8sM85c5qO1Tw_R2-8NyO7'
 );
 const DATA_URL = 'https://mryike.github.io/canyon-tracker/data.json';
-// Canyon.py saves exactly these 3 names — order matches preferred display order
 const CANYON_ORDER = ['Empress', 'Grand Canyon', 'Narrow Neck'];
+
 let user = null, profile = null;
-let allData = {}; // { "Empress": { "2026-04-16": { sold: [...] } } }
-let dataUpdated = ''; // "2026-04-16 06:00" from Canyon.py
+let allData = {};
+let dataUpdated = '';
 let canyon = 'Empress';
 let dateStr = '';
 let dateList = [];
 let calY = new Date().getFullYear(), calM = new Date().getMonth(), calSel = '';
 let selectedRole = '', selectedOrgs = [], msgChannel = null;
+
+// NEW: Group chats
+let currentConversation = null;
+let messageSubscription = null;
+
+const CANYON_CHATS = [
+  { id: '620164c4-642b-4185-ae6c-b983900b275b', name: 'Empress Canyon' },
+  { id: '5ee03e2c-9308-4e67-b64f-c98ca7b4559d', name: 'Grand Canyon' },
+  { id: '542aebcf-e059-44b4-8c24-83e9ad5bac0e', name: 'Narrow Neck' }
+];
+
 // ── Helpers ────────────────────────────────────────────────────────────
 const todayStr = () => new Date().toISOString().slice(0, 10);
-const parseTime = iso => {
-  try { return new Date(iso).toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true}); }
-  catch { return iso; }
-};
 function fmtFull(s) {
   const d = new Date(s + 'T12:00:00'), t = todayStr();
   const tom = new Date(); tom.setDate(tom.getDate() + 1);
@@ -435,7 +460,8 @@ function fmtFull(s) {
 function getDateListForCanyon(c) {
   return Object.keys(allData[c] || {}).sort();
 }
-// ── Canyon dropdown (now used by BOTH home + calendar) ─────────────────
+
+// ── Canyon dropdown ────────────────────────────────────────────────────
 function populateCanyons() {
   const canyons = Object.keys(allData).sort((a, b) => {
     const ia = CANYON_ORDER.indexOf(a), ib = CANYON_ORDER.indexOf(b);
@@ -444,29 +470,23 @@ function populateCanyons() {
     if (ib === -1) return -1;
     return ia - ib;
   });
-
-  // Home dropdown
   const dd = document.getElementById('canyonDd');
   dd.innerHTML = canyons.map(c =>
     `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
   ).join('');
-
-  // NEW: Calendar dropdown (added in calTab topbar)
   const calDd = document.getElementById('calCanyonDd');
   if (calDd) {
     calDd.innerHTML = canyons.map(c =>
       `<div class="filter-opt${c === canyon ? ' sel' : ''}" onclick="selCanyon('${c.replace(/'/g,"\\'")}',this)">${c}</div>`
     ).join('');
   }
-
-  // Update settings page canyon list
   document.getElementById('settingsCanyons').textContent = canyons.join(', ');
 }
+
 // ── Updated banner ─────────────────────────────────────────────────────
 function showUpdatedBar(updatedStr) {
   if (!updatedStr) return;
   dataUpdated = updatedStr;
-  // Parse "2026-04-16 06:00" into a Date
   const parts = updatedStr.match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/);
   let label = updatedStr;
   let stale = false;
@@ -477,7 +497,7 @@ function showUpdatedBar(updatedStr) {
       label = `Updated ${Math.round(diffMins)}m ago`;
     } else {
       label = `Updated ${dt.toLocaleTimeString('en-AU', {hour:'numeric', minute:'2-digit', hour12:true})} ${dt.toLocaleDateString('en-AU', {day:'numeric', month:'short'})}`;
-      stale = diffMins > 120; // orange dot if >2hrs old
+      stale = diffMins > 120;
     }
   }
   document.getElementById('updatedText').textContent = label;
@@ -485,6 +505,7 @@ function showUpdatedBar(updatedStr) {
   document.getElementById('updatedBar').style.display = 'flex';
   document.getElementById('settingsUpdated').textContent = updatedStr;
 }
+
 // ── Screens ────────────────────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll('.app>.screen').forEach(s => s.classList.remove('active'));
@@ -496,18 +517,20 @@ function showTab(name, btn) {
   document.getElementById(name + 'Tab').classList.add('active');
   btn.classList.add('active');
   if (name === 'cal') renderCal();
-  if (name === 'msg') scrollMsgs();
+  if (name === 'msg') loadConversations();   // ← important
 }
+
 // ── Auth ───────────────────────────────────────────────────────────────
 async function signInGoogle() {
   await sb.auth.signInWithOAuth({provider:'google', options:{redirectTo:window.location.origin}});
 }
 async function signOut() {
-  if (msgChannel) sb.removeChannel(msgChannel);
+  if (messageSubscription) messageSubscription.unsubscribe();
   await sb.auth.signOut();
   user = null; profile = null;
   showScreen('loginScreen');
 }
+
 // ── Onboarding ─────────────────────────────────────────────────────────
 let currentStep = 1;
 function selectRole(r) {
@@ -530,13 +553,14 @@ function nextStep() {
     document.getElementById('onboardStep').textContent = 'Step 3 of 3';
   }
 }
-function searchOrgs() { /* Mock function */ }
-function addOrgFromInput() { /* Mock function */ }
+function searchOrgs() {}
+function addOrgFromInput() {}
 function submitOwner() { nextStep(); }
 function finishOnboarding() {
   showScreen('appScreen');
   loadData();
 }
+
 // ── App Functions ──────────────────────────────────────────────────────
 function toggleDd(id) {
   const el = document.getElementById(id);
@@ -547,12 +571,10 @@ function toggleDd(id) {
 function selCanyon(c, el) {
   canyon = c;
   document.getElementById('canyonLabel').textContent = c;
-  document.getElementById('calCanyonLabel').textContent = c;   // ← updated for new calendar dropdown
+  document.getElementById('calCanyonLabel').textContent = c;
   document.querySelectorAll('.filter-dd').forEach(d => d.classList.remove('open'));
- 
   dateList = getDateListForCanyon(canyon);
   if (!dateList.includes(dateStr)) dateStr = dateList[0] || todayStr();
- 
   populateDates();
   renderHome();
   renderCal();
@@ -593,13 +615,10 @@ function renderCal() {
   const monthLabel = document.getElementById('calMonth');
   const first = new Date(calY, calM, 1);
   monthLabel.textContent = first.toLocaleString('default', { month: 'long', year: 'numeric' });
- 
   const daysInMonth = new Date(calY, calM + 1, 0).getDate();
   const startDay = (first.getDay() + 6) % 7;
- 
   let html = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => `<div class="cal-dow">${d}</div>`).join('');
   for (let i = 0; i < startDay; i++) html += `<div class="cal-day empty"></div>`;
- 
   for (let d = 1; d <= daysInMonth; d++) {
     const curDate = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday = curDate === todayStr();
@@ -634,15 +653,72 @@ function renderCalList() {
 }
 function calPrev() { calM--; if(calM < 0){calM = 11; calY--;} renderCal(); }
 function calNext() { calM++; if(calM > 11){calM = 0; calY++;} renderCal(); }
-function sendMsg() {
-  const inp = document.getElementById('msgInput');
-  if (!inp.value.trim()) return;
-  inp.value = '';
+
+// ── MESSAGES (Group Chats) ─────────────────────────────────────────────
+function loadConversations() {
+  const container = document.getElementById('convListView');
+  document.getElementById('chatView').style.display = 'none';
+  container.style.display = 'flex';
+  container.innerHTML = CANYON_CHATS.map(c => `
+    <div class="conversation-item" onclick="openConversation('${c.id}', '${c.name}')">
+      <div class="conv-name">${c.name}</div>
+      <div class="conv-sub">Group chat • Canyon team</div>
+    </div>
+  `).join('');
 }
-function scrollMsgs() {
-  const list = document.getElementById('msgList');
+
+async function openConversation(id, name) {
+  currentConversation = { id, name };
+  document.getElementById('convListView').style.display = 'none';
+  document.getElementById('chatView').style.display = 'flex';
+  document.getElementById('chatHeaderName').textContent = name;
+  await loadMessages();
+  subscribeToMessages();
+}
+
+async function loadMessages() {
+  const { data } = await sb.from('messages').select('*').eq('conversation_id', currentConversation.id).order('created_at', { ascending: true });
+  renderMessages(data || []);
+}
+
+function renderMessages(msgs) {
+  const list = document.getElementById('chatMessageList');
+  list.innerHTML = msgs.map(m => {
+    const isMine = m.sender_id === user.id;
+    return `<div class="msg-bubble ${isMine ? 'mine' : 'theirs'}">
+      ${!isMine ? `<div class="msg-name">Team</div>` : ''}
+      <div>${m.content}</div>
+      <div class="msg-time">${new Date(m.created_at).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true})}</div>
+    </div>`;
+  }).join('');
   list.scrollTop = list.scrollHeight;
 }
+
+async function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const content = input.value.trim();
+  if (!content || !currentConversation || !user) return;
+  await sb.from('messages').insert({ conversation_id: currentConversation.id, sender_id: user.id, content });
+  input.value = '';
+  loadMessages();
+}
+
+function subscribeToMessages() {
+  if (messageSubscription) messageSubscription.unsubscribe();
+  messageSubscription = sb.channel(`chat:${currentConversation.id}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${currentConversation.id}` }, loadMessages)
+    .subscribe();
+}
+
+function backToConversations() {
+  if (messageSubscription) messageSubscription.unsubscribe();
+  currentConversation = null;
+  document.getElementById('chatView').style.display = 'none';
+  document.getElementById('convListView').style.display = 'flex';
+  loadConversations();
+}
+
+// ── Rest of the original script ────────────────────────────────────────
 function setTheme(mode, btn) {
   document.body.className = mode === 'dark' ? 'dark' : '';
   if (btn) {
