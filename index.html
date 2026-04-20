@@ -7,8 +7,6 @@
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#c45e2a"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="Canyon"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -16,83 +14,59 @@
 :root{
   --bg:#f0ece6;--surface:#fff;--surface2:#e8e4de;--border:#ddd8d0;
   --text:#1a1208;--text2:#6b6050;--text3:#a89880;
-  --accent:#c45e2a;--accent-bg:#fdf0e8;--accent-light:#f5e0cc;
+  --accent:#c45e2a;--accent-bg:#fdf0e8;
   --nav:#fff;--radius:14px;--font:'Inter',sans-serif;--fs:15px;
-}
-.dark{
-  --bg:#1a1510;--surface:#242018;--surface2:#2e2820;--border:#3a3228;
-  --text:#f5f0e8;--text2:#a89070;--text3:#706050;
-  --accent:#e07840;--accent-bg:#2a1e10;--accent-light:#3a2818;--nav:#1e1a14;
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);font-size:var(--fs);background:var(--bg);color:var(--text);display:flex;justify-content:center}
 .app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
-.screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
-.loading-wrap{flex:1;display:flex;align-items:center;justify-content:center}
-.spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:20px;overflow-y:auto}
-.login-icon{width:72px;height:72px;border-radius:18px;overflow:hidden;background:var(--accent-bg);display:flex;align-items:center;justify-content:center}
-.login-title{font-size:24px;font-weight:700;color:var(--text);text-align:center}
-.login-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.5;max-width:260px}
-.google-btn{display:flex;align-items:center;gap:10px;padding:13px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;width:100%;max-width:280px;justify-content:center}
-.google-btn svg{width:20px;height:20px;flex-shrink:0}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:52px 16px 12px;background:var(--bg);flex-shrink:0}
-.topbar-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px}
-.filters{display:flex;gap:8px;padding:0 16px 10px;flex-shrink:0}
-.filter-wrap{position:relative;flex:1}
-.filter-btn{display:flex;align-items:center;gap:6px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;width:100%}
-.filter-btn .ch{margin-left:auto;width:12px;height:12px;color:var(--text3);flex-shrink:0}
-.filter-dd{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;overflow:hidden;display:none;max-height:240px;overflow-y:auto}
-.filter-dd.open{display:block}
-.filter-opt{padding:12px 14px;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-.filter-opt.sel{color:var(--accent)}
-.filter-opt.sel::after{content:'✓';color:var(--accent);font-weight:700}
-.bookings-scroll{flex:1;overflow-y:auto;padding:8px 16px 16px;min-height:0}
-.booking-card{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:8px;border:1px solid var(--border)}
-.msg-list{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;min-height:0}
-.conversation-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
-.conversation-item:hover{background:var(--surface2)}
-.conversation-item .conv-name{font-size:16px;font-weight:600;color:var(--text)}
-.msg-bubble{max-width:78%;padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.4}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:52px 16px 12px;background:var(--bg)}
+.topbar-title{font-size:22px;font-weight:700;color:var(--text)}
+.msg-list{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.conversation-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer}
+.conversation-item .conv-name{font-size:17px;font-weight:600}
+.msg-bubble{max-width:80%;padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.4}
 .msg-bubble.mine{background:var(--accent);color:white;align-self:flex-end;border-bottom-right-radius:4px}
-.msg-bubble.theirs{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
-.msg-bar{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.msg-input{flex:1;padding:9px 13px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;outline:none}
-.msg-send{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.bottom-nav{display:flex;background:var(--nav);border-top:1px solid var(--border);padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:none;background:none;cursor:pointer;font-size:10px;color:var(--text3)}
+.msg-bubble.theirs{background:var(--surface);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px}
+.msg-bar{display:flex;gap:8px;padding:12px 16px;background:var(--surface);border-top:1px solid var(--border)}
+.msg-input{flex:1;padding:12px 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);outline:none;font-size:15px}
+.msg-send{width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;color:white;display:flex;align-items:center;justify-content:center}
+.bottom-nav{display:flex;background:var(--nav);border-top:1px solid var(--border);padding:8px 0}
+.nav-btn{flex:1;text-align:center;padding:6px 0;font-size:11px;color:var(--text2)}
 .nav-btn.active{color:var(--accent)}
 </style>
 </head>
 <body>
-<div class="app" id="app">
+<div class="app">
 
-  <!-- MESSAGES TAB -->
-  <div class="screen" id="msgTab">
-    <div class="topbar"><div class="topbar-title">Messages</div></div>
-    <div class="hdiv"></div>
+  <!-- Messages Tab -->
+  <div class="screen active" id="msgTab">
+    <div class="topbar">
+      <div class="topbar-title">Messages</div>
+    </div>
+
+    <!-- Conversation List -->
     <div id="convListView" class="msg-list"></div>
 
-    <div id="chatView" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-      <div style="padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">
-        <button onclick="backToConversations()" style="background:none;border:none;font-size:24px;color:var(--accent)">←</button>
-        <div id="chatHeaderName" style="font-size:17px;font-weight:700;color:var(--text)"></div>
+    <!-- Chat View -->
+    <div id="chatView" style="display:none;flex:1;flex-direction:column">
+      <div style="padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        <button onclick="backToConversations()" style="font-size:28px;background:none;border:none;color:var(--accent)">←</button>
+        <div id="chatHeaderName" style="font-size:18px;font-weight:700"></div>
       </div>
-      <div class="msg-list" id="chatMessageList"></div>
+      <div id="chatMessageList" class="msg-list"></div>
       <div class="msg-bar">
-        <input class="msg-input" id="msgInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
-        <button class="msg-send" onclick="sendMsg()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+        <input id="msgInput" class="msg-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMsg()">
+        <button class="msg-send" onclick="sendMsg()">↑</button>
       </div>
     </div>
   </div>
 
-  <!-- Bottom nav (only showing Messages for now to test) -->
+  <!-- Bottom nav -->
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="showTab('msg',this)">Messages</button>
+    <button class="nav-btn active" onclick="showTab('msg')">Messages</button>
   </div>
 
 </div>
@@ -117,21 +91,21 @@ async function checkUser() {
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     user = session.user;
-    showTab('msg');
     loadConversations();
   } else {
-    alert("Please sign in first");
+    alert("Please sign in with Google first");
   }
 }
 
 function loadConversations() {
   const container = document.getElementById('convListView');
-  container.innerHTML = CANYON_CHATS.map(c => `
-    <div class="conversation-item" onclick="openConversation('${c.id}', '${c.name}')">
-      <div class="conv-name">${c.name}</div>
-      <div class="conv-sub">Group chat • Canyon team</div>
+  container.innerHTML = CANYON_CHATS.map(chat => `
+    <div class="conversation-item" onclick="openConversation('${chat.id}', '${chat.name}')">
+      <div class="conv-name">${chat.name}</div>
+      <div style="font-size:13px;color:#888">Tap to open group chat</div>
     </div>
   `).join('');
+  console.log("✅ Conversation list rendered");
 }
 
 async function openConversation(id, name) {
@@ -139,18 +113,21 @@ async function openConversation(id, name) {
   document.getElementById('convListView').style.display = 'none';
   document.getElementById('chatView').style.display = 'flex';
   document.getElementById('chatHeaderName').textContent = name;
+
+  console.log("Opening chat:", name);
   await loadMessages();
   subscribeToMessages();
 }
 
 async function loadMessages() {
+  if (!currentConversation) return;
   const { data, error } = await sb
     .from('messages')
     .select('*')
     .eq('conversation_id', currentConversation.id)
     .order('created_at', { ascending: true });
-  
-  if (error) console.error("Load messages error:", error);
+
+  if (error) console.error("Load error:", error);
   renderMessages(data || []);
 }
 
@@ -159,9 +136,8 @@ function renderMessages(msgs) {
   list.innerHTML = msgs.map(m => {
     const isMine = m.sender_id === user.id;
     return `<div class="msg-bubble ${isMine ? 'mine' : 'theirs'}">
-      ${!isMine ? `<div class="msg-name">Team</div>` : ''}
       <div>${m.content}</div>
-      <div class="msg-time">${new Date(m.created_at).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true})}</div>
+      <div style="font-size:10px;opacity:0.7;margin-top:4px">${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
     </div>`;
   }).join('');
   list.scrollTop = list.scrollHeight;
@@ -170,19 +146,20 @@ function renderMessages(msgs) {
 async function sendMsg() {
   const input = document.getElementById('msgInput');
   const content = input.value.trim();
-  if (!content || !currentConversation || !user) return;
+  if (!content || !currentConversation || !user) {
+    alert("Cannot send - missing data");
+    return;
+  }
 
-  const { error } = await sb
-    .from('messages')
-    .insert({ 
-      conversation_id: currentConversation.id, 
-      sender_id: user.id, 
-      content 
-    });
+  const { error } = await sb.from('messages').insert({
+    conversation_id: currentConversation.id,
+    sender_id: user.id,
+    content: content
+  });
 
   if (error) {
-    console.error("Send error:", error);
-    alert("❌ Could not send message:\n" + error.message);
+    console.error("Send failed:", error);
+    alert("Send failed: " + error.message);
     return;
   }
 
@@ -193,21 +170,25 @@ async function sendMsg() {
 function subscribeToMessages() {
   if (messageSubscription) messageSubscription.unsubscribe();
   messageSubscription = sb.channel(`chat:${currentConversation.id}`)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${currentConversation.id}` }, loadMessages)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages',
+      filter: `conversation_id=eq.${currentConversation.id}`
+    }, () => loadMessages())
     .subscribe();
 }
 
 function backToConversations() {
   if (messageSubscription) messageSubscription.unsubscribe();
-  currentConversation = null;
   document.getElementById('chatView').style.display = 'none';
   document.getElementById('convListView').style.display = 'flex';
-  loadConversations();
+  currentConversation = null;
 }
 
-function showTab(name) {
+function showTab(tab) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(name + 'Tab').classList.add('active');
+  document.getElementById(tab + 'Tab').classList.add('active');
 }
 
 window.addEventListener('load', checkUser);
