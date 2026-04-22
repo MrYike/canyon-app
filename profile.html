@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — Profile</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.profile-hero {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 32px 20px 24px; gap: 12px;
+}
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--accent-bg); border: 3px solid var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700; color: var(--accent);
+}
+.profile-name { font-size: 20px; font-weight: 700; }
+.profile-email { font-size: 13px; color: var(--text3); }
+.profile-role-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 20px;
+  background: var(--accent-bg); border: 1px solid var(--accent-light);
+  font-size: 12px; font-weight: 600; color: var(--accent);
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <button onclick="history.back()" style="background:none;border:none;font-size:24px;color:var(--accent);cursor:pointer;padding:0">&#8592;</button>
+    <div class="topbar-title">Profile</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="hdiv"></div>
+
+  <div class="page-scroll">
+
+    <div class="profile-hero">
+      <div class="profile-avatar" id="heroAvatar">?</div>
+      <div class="profile-name" id="heroName">Loading...</div>
+      <div class="profile-email" id="heroEmail"></div>
+      <div class="profile-role-badge" id="heroRole">🧗 Guide</div>
+    </div>
+
+    <div class="sec-label">Details</div>
+    <div class="settings-card">
+      <div class="set-row" style="border-top:none">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Full name</div>
+          <div class="set-desc" id="detailName">&#8212;</div>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Email</div>
+          <div class="set-desc" id="detailEmail">&#8212;</div>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <path d="M16 8h-3a1 1 0 00-1 1v3"/>
+            <path d="M12 12v4"/><path d="M8 12h4"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Provider</div>
+          <div class="set-desc" id="detailProvider">Google</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-secondary" onclick="signOut()" style="margin-top:8px">Sign Out</button>
+
+  </div>
+
+  <div id="navEl"></div>
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+async function init() {
+  const user = await requireAuth();
+  if (!user) return;
+
+  document.getElementById('navEl').innerHTML = NAV_HTML;
+
+  const name = user.user_metadata?.full_name || user.email || 'Staff Member';
+  const initials = name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+
+  document.getElementById('heroAvatar').textContent = initials;
+  document.getElementById('heroName').textContent = name;
+  document.getElementById('heroEmail').textContent = user.email || '';
+  document.getElementById('detailName').textContent = name;
+  document.getElementById('detailEmail').textContent = user.email || '';
+  document.getElementById('detailProvider').textContent =
+    user.app_metadata?.provider?.charAt(0).toUpperCase() + user.app_metadata?.provider?.slice(1) || 'Google';
+}
+
+init();
+</script>
+</body>
+</html>

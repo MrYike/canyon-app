@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — Booking Detail</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.detail-hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 16px;
+  flex-shrink: 0;
+}
+.detail-time { font-size: 32px; font-weight: 800; letter-spacing: -.5px; color: var(--accent); }
+.detail-date { font-size: 14px; color: var(--text2); margin-top: 2px; }
+.detail-company { font-size: 20px; font-weight: 700; margin-top: 12px; }
+.detail-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 16px; border-top: 1px solid var(--border);
+}
+.detail-row:first-child { border-top: none; }
+.detail-row-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--accent-bg);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.detail-row-icon svg { width: 17px; height: 17px; color: var(--accent); }
+.detail-row-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.detail-row-value { font-size: 15px; font-weight: 600; margin-top: 1px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <button onclick="history.back()" style="background:none;border:none;font-size:24px;color:var(--accent);cursor:pointer;padding:0">&#8592;</button>
+    <div class="topbar-title">Booking</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="hdiv"></div>
+
+  <!-- Hero -->
+  <div class="detail-hero" id="detailHero">
+    <div style="text-align:center;color:var(--text3);padding:20px">Loading...</div>
+  </div>
+
+  <!-- Details card -->
+  <div class="page-scroll">
+    <div class="settings-card" id="detailCard" style="margin-top:12px"></div>
+  </div>
+
+  <div id="navEl"></div>
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+// Reads ?canyon=, ?date=, ?index= from URL
+const params = new URLSearchParams(window.location.search);
+const canyonName = params.get('canyon') || '';
+const dateKey    = params.get('date') || '';
+const bookIdx    = parseInt(params.get('index') || '0', 10);
+
+async function init() {
+  const user = await requireAuth();
+  if (!user) return;
+
+  document.getElementById('navEl').innerHTML = NAV_HTML;
+
+  const data = State.data;
+  const booking = data[canyonName]?.[dateKey]?.sold?.[bookIdx];
+
+  if (!booking) {
+    document.getElementById('detailHero').innerHTML =
+      `<div style="color:var(--text3);padding:20px;text-align:center">Booking not found</div>`;
+    return;
+  }
+
+  document.getElementById('detailHero').innerHTML = `
+    <div class="detail-time">${booking.time || 'TBC'}</div>
+    <div class="detail-date">${fmtFull(dateKey)}</div>
+    <div class="detail-company">${booking.company}</div>
+  `;
+
+  document.getElementById('detailCard').innerHTML = `
+    <div class="detail-row">
+      <div class="detail-row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+      </div>
+      <div>
+        <div class="detail-row-label">Passengers (Pax)</div>
+        <div class="detail-row-value">${booking.pax}</div>
+      </div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <div>
+        <div class="detail-row-label">Canyon</div>
+        <div class="detail-row-value">${canyonName}</div>
+      </div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="detail-row-label">Date</div>
+        <div class="detail-row-value">${fmtFull(dateKey)}</div>
+      </div>
+    </div>
+    ${booking.guide ? `
+    <div class="detail-row">
+      <div class="detail-row-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="detail-row-label">Guide</div>
+        <div class="detail-row-value">${booking.guide}</div>
+      </div>
+    </div>` : ''}
+  `;
+}
+
+init();
+</script>
+</body>
+</html>

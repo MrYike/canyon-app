@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — Messages</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-title">Messages</div>
+  </div>
+  <div class="hdiv"></div>
+  <div class="page-scroll" id="convList"></div>
+  <div id="navEl"></div>
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+async function init() {
+  const user = await requireAuth();
+  if (!user) return;
+
+  document.getElementById('navEl').innerHTML = NAV_HTML;
+  highlightNav('messages');
+  renderConvList();
+}
+
+function renderConvList() {
+  const list = document.getElementById('convList');
+  list.innerHTML = CANYON_CHATS.map(chat => `
+    <a href="chat.html?id=${chat.id}&name=${encodeURIComponent(chat.name)}" style="text-decoration:none">
+      <div class="conv-item">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🏔️</div>
+          <div>
+            <div class="conv-name">${chat.name}</div>
+            <div class="conv-sub">Group chat &bull; Canyon team</div>
+          </div>
+          <div style="margin-left:auto;color:var(--text3);font-size:18px">›</div>
+        </div>
+      </div>
+    </a>
+  `).join('');
+}
+
+init();
+</script>
+</body>
+</html>

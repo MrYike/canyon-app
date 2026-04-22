@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — About</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.about-hero {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 20px 28px; gap: 12px;
+}
+.about-icon {
+  width: 80px; height: 80px; border-radius: 20px;
+  background: var(--accent-bg); border: 1px solid var(--accent-light);
+  display: flex; align-items: center; justify-content: center; font-size: 40px;
+}
+.about-app-name { font-size: 22px; font-weight: 700; }
+.about-version { font-size: 13px; color: var(--text3); }
+.link-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px; border-top: 1px solid var(--border);
+  font-size: 14px; font-weight: 600; text-decoration: none; color: var(--text);
+}
+.link-row:first-child { border-top: none; }
+.link-row .arrow { color: var(--text3); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <button onclick="history.back()" style="background:none;border:none;font-size:24px;color:var(--accent);cursor:pointer;padding:0">&#8592;</button>
+    <div class="topbar-title">About</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="hdiv"></div>
+
+  <div class="page-scroll">
+
+    <div class="about-hero">
+      <div class="about-icon">🏔️</div>
+      <div class="about-app-name">Canyon Bookings</div>
+      <div class="about-version">Version 1.1.0</div>
+    </div>
+
+    <div class="sec-label">Data</div>
+    <div class="settings-card">
+      <div class="set-row" style="border-top:none">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Data source</div>
+          <div class="set-desc">mryike.github.io/canyon-tracker</div>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Last updated</div>
+          <div class="set-desc" id="lastUpdated">&#8212;</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Legal</div>
+    <div class="settings-card">
+      <a class="link-row" href="#">Privacy Policy <span class="arrow">›</span></a>
+      <a class="link-row" href="#">Terms of Use <span class="arrow">›</span></a>
+      <a class="link-row" href="#">Open Source Licences <span class="arrow">›</span></a>
+    </div>
+
+    <div style="padding:24px 0;font-size:12px;color:var(--text3);text-align:center;line-height:1.6">
+      Built for canyon guides and operators.<br>
+      &copy; 2026 Canyon Bookings
+    </div>
+
+  </div>
+
+  <div id="navEl"></div>
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+async function init() {
+  const user = await requireAuth();
+  if (!user) return;
+  document.getElementById('navEl').innerHTML = NAV_HTML;
+  document.getElementById('lastUpdated').textContent = State.updated || '—';
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — Settings</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+</head>
+<body>
+<div class="app">
+  <div class="topbar"><div class="topbar-title">Settings</div></div>
+  <div class="hdiv"></div>
+  <div class="page-scroll">
+
+    <!-- Account -->
+    <div class="sec-label">Account</div>
+    <div class="settings-card">
+      <div class="prof-row">
+        <div class="avatar-ph" id="profAvatar">?</div>
+        <div class="set-info">
+          <div class="set-label" id="profName">Loading...</div>
+          <div class="set-desc" id="profEmail"></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-secondary" onclick="signOut()" style="margin-bottom:8px">Sign Out</button>
+
+    <!-- Appearance -->
+    <div class="sec-label">Appearance</div>
+    <div class="settings-card">
+      <div class="sub-label">THEME</div>
+      <div class="seg" id="themeSegs">
+        <button class="seg-btn" id="thL" onclick="setTheme('light',this)">Light</button>
+        <button class="seg-btn" id="thD" onclick="setTheme('dark',this)">Dark</button>
+        <button class="seg-btn" id="thS" onclick="setTheme('system',this)">System</button>
+      </div>
+      <div class="sub-label" style="border-top:1px solid var(--border)">TEXT SIZE</div>
+      <div class="seg" id="fsSegs">
+        <button class="seg-btn" id="fsS" onclick="setFs('13px',this)">Small</button>
+        <button class="seg-btn" id="fsM" onclick="setFs('15px',this)">Medium</button>
+        <button class="seg-btn" id="fsL" onclick="setFs('17px',this)">Large</button>
+      </div>
+    </div>
+
+    <!-- Data -->
+    <div class="sec-label">Data</div>
+    <div class="settings-card">
+      <div class="set-row" style="border-top:none">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Last updated</div>
+          <div class="set-desc" id="lastUpdated">&#8212;</div>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Canyons tracked</div>
+          <div class="set-desc" id="canyonsTracked">&#8212;</div>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Data source</div>
+          <div class="set-desc">mryike.github.io/canyon-tracker</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="sec-label">About</div>
+    <div class="settings-card">
+      <div class="set-row" style="border-top:none">
+        <div class="set-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="set-info">
+          <div class="set-label">Canyon Bookings</div>
+          <div class="set-desc">Version 1.1.0</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div id="navEl"></div>
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+async function init() {
+  const user = await requireAuth();
+  if (!user) return;
+
+  document.getElementById('navEl').innerHTML = NAV_HTML;
+  highlightNav('settings');
+
+  // Profile
+  const name = user.user_metadata?.full_name || user.email || 'Staff Member';
+  const initials = name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+  document.getElementById('profName').textContent = name;
+  document.getElementById('profEmail').textContent = user.email || '';
+  document.getElementById('profAvatar').textContent = initials;
+
+  // Data info
+  document.getElementById('lastUpdated').textContent = State.updated || '—';
+  const canyons = sortedCanyons(State.data);
+  document.getElementById('canyonsTracked').textContent = canyons.length ? canyons.join(', ') : '—';
+
+  // Restore seg button states
+  const theme = State.theme;
+  const fs = State.fs;
+  document.getElementById('th' + theme.charAt(0).toUpperCase() + theme.slice(1,2))?.classList.add('active');
+  if (fs === '13px') document.getElementById('fsS').classList.add('active');
+  else if (fs === '17px') document.getElementById('fsL').classList.add('active');
+  else document.getElementById('fsM').classList.add('active');
+}
+
+function setTheme(mode, btn) {
+  State.theme = mode;
+  document.getElementById('themeSegs').querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = mode === 'dark' || (mode === 'system' && prefersDark);
+  document.documentElement.classList.toggle('dark', dark);
+}
+
+function setFs(size, btn) {
+  State.fs = size;
+  document.getElementById('fsSegs').querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.documentElement.style.setProperty('--fs', size);
+}
+
+init();
+</script>
+</body>
+</html>

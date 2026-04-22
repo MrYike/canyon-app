@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — Chat</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.chat-wrap {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0;
+}
+.chat-header {
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+.back-btn {
+  background: none; border: none; font-size: 24px;
+  color: var(--accent); cursor: pointer; padding: 0;
+  display: flex; align-items: center;
+}
+.chat-name { font-size: 17px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Back header -->
+  <div class="chat-header">
+    <button class="back-btn" onclick="window.location.href='messages.html'">&#8592;</button>
+    <div class="chat-name" id="chatName">Loading...</div>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-wrap">
+    <div class="msg-list" id="msgList">
+      <div style="text-align:center;padding:32px;color:var(--text3);font-size:13px">Loading messages...</div>
+    </div>
+    <div class="msg-bar">
+      <input class="msg-input" id="msgInput" placeholder="Type a message..."
+             onkeydown="if(event.key==='Enter') sendMsg()"/>
+      <button class="msg-send" onclick="sendMsg()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+// Read ?id= and ?name= from URL
+const params = new URLSearchParams(window.location.search);
+const convId   = params.get('id');
+const convName = params.get('name') || 'Chat';
+
+let msgSubscription = null;
+
+async function init() {
+  const user = await requireAuth();
+  if (!user) return;
+
+  if (!convId) { window.location.href = 'messages.html'; return; }
+
+  document.getElementById('chatName').textContent = convName;
+  document.title = `Canyon — ${convName}`;
+
+  await loadMessages();
+  subscribeMessages();
+}
+
+async function loadMessages() {
+  const { data, error } = await sb
+    .from('messages')
+    .select('*')
+    .eq('conversation_id', convId)
+    .order('created_at', { ascending: true });
+
+  if (error) { console.error('Load error:', error); return; }
+  renderMessages(data || []);
+}
+
+function renderMessages(msgs) {
+  const user = State.user;
+  const list = document.getElementById('msgList');
+
+  if (msgs.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text3);font-size:13px">No messages yet. Say hello!</div>`;
+    return;
+  }
+
+  list.innerHTML = msgs.map(m => {
+    const isMine = user && m.sender_id === user.id;
+    const time = new Date(m.created_at).toLocaleTimeString('en-AU', {
+      hour: 'numeric', minute: '2-digit', hour12: true
+    });
+    return `
+      <div class="msg-bubble ${isMine ? 'mine' : 'theirs'}">
+        ${!isMine ? `<div class="msg-name">Team</div>` : ''}
+        <div>${m.content}</div>
+        <div class="msg-time">${time}</div>
+      </div>`;
+  }).join('');
+
+  list.scrollTop = list.scrollHeight;
+}
+
+async function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const content = input.value.trim();
+  const user = State.user;
+  if (!content || !user) return;
+
+  input.value = '';
+
+  const { error } = await sb.from('messages').insert({
+    conversation_id: convId,
+    sender_id: user.id,
+    content
+  });
+
+  if (error) {
+    console.error('Send failed:', error);
+    input.value = content; // restore on failure
+    return;
+  }
+
+  // Message will appear via realtime subscription
+}
+
+function subscribeMessages() {
+  if (msgSubscription) msgSubscription.unsubscribe();
+  msgSubscription = sb
+    .channel(`chat:${convId}`)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages',
+      filter: `conversation_id=eq.${convId}`
+    }, () => loadMessages())
+    .subscribe();
+}
+
+// Unsubscribe when leaving the page
+window.addEventListener('pagehide', () => {
+  if (msgSubscription) msgSubscription.unsubscribe();
+});
+
+init();
+</script>
+</body>
+</html>

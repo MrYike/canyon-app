@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — Setup</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.onboard-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  overflow-y: auto; padding: 20px; gap: 0;
+}
+.onboard-step { display: none; flex-direction: column; gap: 16px; }
+.onboard-step.active { display: flex; }
+.onboard-title { font-size: 22px; font-weight: 700; }
+.onboard-sub { font-size: 14px; color: var(--text2); line-height: 1.5; }
+.step-indicator { font-size: 12px; color: var(--text3); }
+.success-emoji { font-size: 48px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar" style="padding-top:52px">
+    <div class="topbar-title">Welcome!</div>
+    <div class="step-indicator" id="stepIndicator">Step 1 of 3</div>
+  </div>
+  <div class="hdiv"></div>
+
+  <div class="onboard-wrap">
+
+    <!-- Step 1: Role -->
+    <div class="onboard-step active" id="step1">
+      <div class="onboard-title">What's your role?</div>
+      <div class="onboard-sub">This helps us set up the right experience for you.</div>
+      <div class="role-card" id="roleGuide" onclick="selectRole('guide')">
+        <div class="role-card-title">🧗 Guide</div>
+        <div class="role-card-sub">I lead canyon trips and work for one or more companies</div>
+      </div>
+      <div class="role-card" id="roleOwner" onclick="selectRole('owner')">
+        <div class="role-card-title">🏢 Business Owner</div>
+        <div class="role-card-sub">I run a canyoning company and manage bookings</div>
+      </div>
+      <button class="btn-primary" id="step1Next" onclick="goStep2()" disabled>Continue</button>
+    </div>
+
+    <!-- Step 2a: Guide — org search -->
+    <div class="onboard-step" id="step2Guide">
+      <div class="onboard-title">Who do you work for?</div>
+      <div class="onboard-sub">Search for the company you guide with.</div>
+      <input class="form-input" id="orgSearch" placeholder="Search organisation name..."/>
+      <div id="orgResults" style="display:flex;flex-direction:column;gap:6px"></div>
+      <button class="btn-primary" onclick="goStep3()">Continue</button>
+    </div>
+
+    <!-- Step 2b: Owner — business details -->
+    <div class="onboard-step" id="step2Owner">
+      <div class="onboard-title">Tell us about your business</div>
+      <div class="onboard-sub">This helps set up your organisation on the platform.</div>
+      <div class="form-field">
+        <div class="form-label">Business Name</div>
+        <input class="form-input" id="bizName" placeholder="e.g. Blue Mountains Adventures"/>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Business Email</div>
+        <input class="form-input" id="bizEmail" type="email" placeholder="info@yourbusiness.com.au"/>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Phone Number</div>
+        <input class="form-input" id="bizPhone" type="tel" placeholder="+61 4XX XXX XXX"/>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Canyons you operate in</div>
+        <input class="form-input" id="bizCanyons" placeholder="e.g. Empress, Claustral, Grand Canyon"/>
+      </div>
+      <button class="btn-primary" onclick="submitOwner()">Submit for Review</button>
+    </div>
+
+    <!-- Step 3: Done -->
+    <div class="onboard-step" id="step3">
+      <div class="success-emoji">🎉</div>
+      <div class="onboard-title" style="text-align:center">You're all set!</div>
+      <div class="onboard-sub" style="text-align:center">Welcome to Canyon Bookings. Let's get started.</div>
+      <button class="btn-primary" onclick="window.location.href='index.html'">Go to App</button>
+    </div>
+
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+let selectedRole = null;
+
+function selectRole(r) {
+  selectedRole = r;
+  document.getElementById('roleGuide').classList.toggle('selected', r === 'guide');
+  document.getElementById('roleOwner').classList.toggle('selected', r === 'owner');
+  document.getElementById('step1Next').disabled = false;
+}
+
+function goStep2() {
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById(selectedRole === 'guide' ? 'step2Guide' : 'step2Owner').classList.add('active');
+  document.getElementById('stepIndicator').textContent = 'Step 2 of 3';
+}
+
+function goStep3() {
+  document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step3').classList.add('active');
+  document.getElementById('stepIndicator').textContent = 'Step 3 of 3';
+}
+
+function submitOwner() {
+  // TODO: save business details to Supabase
+  goStep3();
+}
+</script>
+</body>
+</html>

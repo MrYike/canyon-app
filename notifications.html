@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
+<title>Canyon Bookings — Notifications</title>
+<meta name="theme-color" content="#c45e2a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px; border-top: 1px solid var(--border);
+}
+.toggle-row:first-child { border-top: none; }
+.toggle-label { font-size: 14px; font-weight: 600; }
+.toggle-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+/* Toggle switch */
+.toggle {
+  width: 44px; height: 26px; border-radius: 13px;
+  background: var(--border); border: none; cursor: pointer;
+  position: relative; transition: background .2s; flex-shrink: 0;
+}
+.toggle.on { background: var(--accent); }
+.toggle::after {
+  content: ''; position: absolute;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: white; top: 3px; left: 3px; transition: left .2s;
+}
+.toggle.on::after { left: 21px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <button onclick="history.back()" style="background:none;border:none;font-size:24px;color:var(--accent);cursor:pointer;padding:0">&#8592;</button>
+    <div class="topbar-title">Notifications</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="hdiv"></div>
+
+  <div class="page-scroll">
+
+    <div class="sec-label">Push Notifications</div>
+    <div class="settings-card">
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">New bookings</div>
+          <div class="toggle-sub">Alert when a new booking is added</div>
+        </div>
+        <button class="toggle on" id="togNewBooking" onclick="togglePref('newBooking',this)"></button>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Booking cancellations</div>
+          <div class="toggle-sub">Alert when a booking is cancelled</div>
+        </div>
+        <button class="toggle on" id="togCancelled" onclick="togglePref('cancelled',this)"></button>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">New messages</div>
+          <div class="toggle-sub">Alert for new group chat messages</div>
+        </div>
+        <button class="toggle on" id="togMessages" onclick="togglePref('messages',this)"></button>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Data refreshed</div>
+          <div class="toggle-sub">Alert when booking data is updated</div>
+        </div>
+        <button class="toggle" id="togDataRefresh" onclick="togglePref('dataRefresh',this)"></button>
+      </div>
+    </div>
+
+    <div class="sec-label">Quiet Hours</div>
+    <div class="settings-card">
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Enable quiet hours</div>
+          <div class="toggle-sub">Silence notifications 10pm – 7am</div>
+        </div>
+        <button class="toggle" id="togQuiet" onclick="togglePref('quiet',this)"></button>
+      </div>
+    </div>
+
+    <div style="padding:16px 0;font-size:12px;color:var(--text3);text-align:center">
+      Notification preferences are saved locally on this device.
+    </div>
+
+  </div>
+
+  <div id="navEl"></div>
+</div>
+<script src="shared.js"></script>
+<script>
+applyPreferences();
+
+async function init() {
+  const user = await requireAuth();
+  if (!user) return;
+  document.getElementById('navEl').innerHTML = NAV_HTML;
+  // Load saved prefs from localStorage
+  const prefs = JSON.parse(localStorage.getItem('cb_notif_prefs') || '{}');
+  Object.entries(prefs).forEach(([key, val]) => {
+    const el = document.getElementById('tog' + key.charAt(0).toUpperCase() + key.slice(1));
+    if (el) el.classList.toggle('on', val);
+  });
+}
+
+function togglePref(key, btn) {
+  btn.classList.toggle('on');
+  const prefs = JSON.parse(localStorage.getItem('cb_notif_prefs') || '{}');
+  prefs[key] = btn.classList.contains('on');
+  localStorage.setItem('cb_notif_prefs', JSON.stringify(prefs));
+}
+
+init();
+</script>
+</body>
+</html>
